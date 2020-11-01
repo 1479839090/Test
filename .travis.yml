@@ -15,3 +15,6 @@ install:
 
 script:
 - npm test
+
+nofications:
+  email: false

@@ -43,7 +43,7 @@ describe('testing feed maanger mock', function () {
     const response = await request.get('/home'); 
 
     expect(response.status).toBe(200); 
-    expect(response.body).toBe(list); 
+    expect(response.body).toStrictEqual(list); 
     done();
   });
 }); 

@@ -83,7 +83,7 @@ app.get('/home', (req, res) => {
     res.send(feed_mock()); 
 });
 
-app.get('/home/view_goals/:userid', (req, res) => { 
+app.get('/home/view_goals/:userid', async (req, res) => { 
     var userid = req.params.userid; 
     var goalids = await db.collection("users").findOne({"id" : userid}).posts; 
     var goals = [];
@@ -284,7 +284,7 @@ app.put('/home/like/:userid', (req, res) => {
     res.send("like recorded");  
 });
 
-app.put('/home/update_goal/updateone', (req, res) => {
+app.put('/home/update_goal/updateone', async (req, res) => {
     var goalid = req.body.goalid; 
     var update = req.body.update; 
 

@@ -5,7 +5,6 @@ const { admin } =require( './config')
 var {notification_options}=require('./push')
 const bodyParser=require('body-parser')
 const cors=require('cors');
-const db = require("../UBC/CPEN 321/GoalStarter/backend/database/db");
 var app = express();
 
 

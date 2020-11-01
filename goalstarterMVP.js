@@ -67,12 +67,10 @@ MongoClient.connect("mongodb://localhost:27017", {useNewUrlParser: true}, functi
     //create a collectiion for storing goals
     db.createCollection("goals", function(err, res) {
         if(err) throw err; 
-        console.log("Goal Collection Created\n"); 
     });
         //create a collection for storing users. 
     db.createCollection("users", function(err, res) {
         if(err) throw err; 
-        console.log("User Collection Created\n"); 
     });
 
  
@@ -87,10 +85,10 @@ app.get('/home', (req, res) => {
 
 app.get('/home/view_goals/:userid', (req, res) => { 
     var userid = req.params.userid; 
-    var goalids = db.collection("users").findOne({"id" : userid}).posts; 
+    var goalids = await db.collection("users").findOne({"id" : userid}).posts; 
     var goals = [];
     for(var i = 0; i < goalids.length; i++) {
-        var goal = db.collection("goals").findOne({"id" : goalids[i]});
+        var goal = await db.collection("goals").findOne({"id" : goalids[i]});
         var d = Date.parse(goal.schedule[goal.status]);
         var d_now = new Date(); 
         if(d_now.now() >= d) {
@@ -290,7 +288,7 @@ app.put('/home/update_goal/updateone', (req, res) => {
     var goalid = req.body.goalid; 
     var update = req.body.update; 
 
-    var step = db.collection("goals").findOne({"id" : goalid}).status; 
+    var step = await db.collection("goals").findOne({"id" : goalid}).status; 
     step = step + 1; 
 
     db.collection("goals").updateOne({"id": goalid}, {

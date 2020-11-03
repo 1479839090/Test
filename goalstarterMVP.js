@@ -69,6 +69,7 @@ MongoClient.connect("mongodb://localhost:27017", {useNewUrlParser: true}, functi
         if(err) throw err; 
     });
         //create a collection for storing users. 
+        
     db.createCollection("users", function(err, res) {
         if(err) throw err; 
     });

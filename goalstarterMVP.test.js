@@ -39,8 +39,8 @@ const list = [
 ];
 
 describe('testing feed maanger mock', function () {
-    it('responds to GET /home', async (done) => {
-    const response = await request.get('/home'); 
+    it('responds to GET /home',  (done) => {
+    const response =  request.get('/home'); 
 
     expect(response.status).toBe(200); 
     expect(response.body).toStrictEqual(list); 

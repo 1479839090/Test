@@ -83,12 +83,12 @@ app.get('/home', (req, res) => {
     res.send(feed_mock()); 
 });
 
-app.get('/home/view_goals/:userid', async (req, res) => { 
+app.get('/home/view_goals/:userid',  (req, res) => { 
     var userid = req.params.userid; 
-    var goalids = await db.collection("users").findOne({"id" : userid}).posts; 
+    var goalids =  db.collection("users").findOne({"id" : userid}).posts; 
     var goals = [];
     for(var i = 0; i < goalids.length; i++) {
-        var goal = await db.collection("goals").findOne({"id" : goalids[i]});
+        var goal =  db.collection("goals").findOne({"id" : goalids[i]});
         var d = Date.parse(goal.schedule[goal.status]);
         var d_now = new Date(); 
         if(d_now.now() >= d) {
@@ -126,12 +126,12 @@ async function verify(token) {
     // const domain = payload['hd'];
   }
 
-app.post('/login',async (req,res)=>{
+app.post('/login', (req,res)=>{
     var token =req.body.idToken
      console.log(token)
     
         try {
-            await verify(token)
+             verify(token)
             console.log(newUser.id)
             console.log(newUser.email)
             console.log(newUser.username)
@@ -152,7 +152,7 @@ app.post('/login',async (req,res)=>{
         
       
      try{
-        const result=await db.collection("users").findOne({"id":newUser.id});
+        const result= db.collection("users").findOne({"id":newUser.id});
        if(result==null){ 
       db.collection("users").insertOne(newUser);
        }
@@ -284,11 +284,11 @@ app.put('/home/like/:userid', (req, res) => {
     res.send("like recorded");  
 });
 
-app.put('/home/update_goal/updateone', async (req, res) => {
+app.put('/home/update_goal/updateone',  (req, res) => {
     var goalid = req.body.goalid; 
     var update = req.body.update; 
 
-    var step = await db.collection("goals").findOne({"id" : goalid}).status; 
+    var step =  db.collection("goals").findOne({"id" : goalid}).status; 
     step = step + 1; 
 
     db.collection("goals").updateOne({"id": goalid}, {

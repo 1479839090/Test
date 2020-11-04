@@ -38,7 +38,7 @@ const list = [
     }
 ];
 
-describe('testing feed maanger mock', function () {
+describe('testing feed manager mock', function () {
     it('responds to GET /home', async (done) => {
     const response = await request.get('/home'); 
 

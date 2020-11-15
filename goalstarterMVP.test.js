@@ -144,8 +144,8 @@ describe('testing feed manager mock', function () {
   });
 
   it('should insert a doc into collection', async () => {
-    const users = db.collection('users');
-    const goals=db.collection('goals');
+    const users = db.collection('user');
+    const goals=db.collection('goal');
    
     await users.insertOne(test_user);
     for(var i = 0; i < 3; i++) { 
@@ -163,6 +163,28 @@ describe('testing feed manager mock', function () {
 
 
 describe('testing fetching user information with correct body',function(){
+  let connection;
+
+  let db;
+  beforeAll(async () => {
+    connection = await MongoClient.connect("mongodb://localhost:27017", {
+      useNewUrlParser: true,
+    });
+    db = await connection.db("dbtest");
+  });
+
+  afterEach(async () => {
+    await db.collection("dbtest").deleteMany({});
+  });
+
+  it('should insert a doc into collection', async () => {
+    const users = db.collection('user');
+    const goals=db.collection('goal');
+   
+    await users.insertOne(test_user);
+    for(var i = 0; i < 3; i++) { 
+      await goals.insertOne(init[i]); 
+  }
   it('responds to POST /home/create_goal/123',async(done)=>{
     const body={ 
       title: "Application to Math 302", 
@@ -176,8 +198,30 @@ describe('testing fetching user information with correct body',function(){
     done();    
   })
 })
-
+})
 describe('testing fetching user information with body with NUll value ',function(){
+  let connection;
+
+  let db;
+  beforeAll(async () => {
+    connection = await MongoClient.connect("mongodb://localhost:27017", {
+      useNewUrlParser: true,
+    });
+    db = await connection.db("dbtest");
+  });
+
+  afterEach(async () => {
+    await db.collection("dbtest").deleteMany({});
+  });
+
+  it('should insert a doc into collection', async () => {
+    const users = db.collection('user');
+    const goals=db.collection('goal');
+   
+    await users.insertOne(test_user);
+    for(var i = 0; i < 3; i++) { 
+      await goals.insertOne(init[i]); 
+  }
   it('responds to POST /home/create_goal/123',async(done)=>{
     const body={
       title: null, 
@@ -191,8 +235,30 @@ describe('testing fetching user information with body with NUll value ',function
       done();    
   })
 })
-
+})
 describe('testing fetching user information with body with wrong userid',function(){
+  let connection;
+
+  let db;
+  beforeAll(async () => {
+    connection = await MongoClient.connect("mongodb://localhost:27017", {
+      useNewUrlParser: true,
+    });
+    db = await connection.db("dbtest");
+  });
+
+  afterEach(async () => {
+    await db.collection("dbtest").deleteMany({});
+  });
+
+  it('should insert a doc into collection', async () => {
+    const users = db.collection('user');
+    const goals=db.collection('goal');
+   
+    await users.insertOne(test_user);
+    for(var i = 0; i < 3; i++) { 
+      await goals.insertOne(init[i]); 
+  }
   it('responds to POST /home/create_goal/321',async(done)=>{
     const body={
       title: "abc", 
@@ -206,17 +272,61 @@ describe('testing fetching user information with body with wrong userid',functio
       done();    
   })
 })
-
+})
 describe('testing correct login',function(){
+  let connection;
+
+  let db;
+  beforeAll(async () => {
+    connection = await MongoClient.connect("mongodb://localhost:27017", {
+      useNewUrlParser: true,
+    });
+    db = await connection.db("dbtest");
+  });
+
+  afterEach(async () => {
+    await db.collection("dbtest").deleteMany({});
+  });
+
+  it('should insert a doc into collection', async () => {
+    const users = db.collection('user');
+    const goals=db.collection('goal');
+   
+    await users.insertOne(test_user);
+    for(var i = 0; i < 3; i++) { 
+      await goals.insertOne(init[i]); 
+  }
   it('responds to POST /login',async(done)=>{
       const body={idtoken:"ADLAHDQLDNKANDKDOHQOEQESVADWQEECC"};
       await request.post('/login').send(body).expect(200);
       done();    
   })
 })
-
+})
 
 describe('testing wrong login',function(){
+  let connection;
+
+  let db;
+  beforeAll(async () => {
+    connection = await MongoClient.connect("mongodb://localhost:27017", {
+      useNewUrlParser: true,
+    });
+    db = await connection.db("dbtest");
+  });
+
+  afterEach(async () => {
+    await db.collection("dbtest").deleteMany({});
+  });
+
+  it('should insert a doc into collection', async () => {
+    const users = db.collection('user');
+    const goals=db.collection('goal');
+   
+    await users.insertOne(test_user);
+    for(var i = 0; i < 3; i++) { 
+      await goals.insertOne(init[i]); 
+  }
   it('responds to POST /login',async(done)=>{
       const body={idtoken:"LADJOQJDNLNLANIIWQIDQDWQWQEDLLLLOE"};
       await request.post('/login').send(body).expect(401);

@@ -295,7 +295,7 @@ app.post("/home/create_goal/:userid", (req, res) => {
             "posts": id
         }
     });
-    if(id!="123"){
+    if(userid!="123"){
         res.status(404);
     }
     else{
@@ -324,7 +324,7 @@ app.put("/home/comment/:userid", (req, res) => {
             "comments": id
         }
     });
-    if(id!="123"){
+    if(userid!="123"){
         res.status(404);
     }
     else{
@@ -351,7 +351,7 @@ app.put("/home/like/:userid", (req, res) => {
             "likes": id 
         }
     });
-   if(id!="123"){
+   if(userid!="123"){
     res.status(404);
    }
    else{

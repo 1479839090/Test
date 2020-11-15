@@ -72,7 +72,7 @@ const test_user = {
 }; 
 
 const tags= ["weightloss", "competitive sports", "running", "weight training", "medical school", "employment", "undergraduate", "masters/PhD", "diet", "LoL", "Valorant", "Overwatch"];
-const db=NULL;
+var db=null;
 //connect mongoclient 
 MongoClient.connect("mongodb://localhost:27017", {useNewUrlParser: true, useUnifiedTopology: true}, function(err, client) {
     if(err) {throw err;}  
@@ -140,14 +140,11 @@ app.get("/home/:userid", async (req, res) => {
 
 app.get("/home/view_goals/:userid", async (req, res) => { 
     var userid = req.params.userid;
-    if(userid=="123"){
-        res.status(200)
-    
     var fetchGoal = async (goalid) => {
         return db.collection("goals").findOne({"id" : goalid}).then((goal) => goal);
     };
     var fetchId = async (name) => {
-        return db.collection("users").findOne({"id" : name}, {"posts":1});
+        return db.collection("users").findOne({"id" : name}, {"posts":1}).then((user) => user.posts); 
     };
     let goalids = await fetchId(userid);  
     console.log(goalids);
@@ -164,7 +161,6 @@ app.get("/home/view_goals/:userid", async (req, res) => {
         goals.push(goal); 
     }
     res.send(goals); 
-}
 });
 
 let newUser={
@@ -194,16 +190,43 @@ async function verify(token) {
     // const domain = payload['hd'];
   }
 
-app.post("/login",async (req,res) => { 
+app.post("/login",async (req,res) => {
+    var token =req.body.idToken; 
      //console.log(token);
-     var token =req.body.idToken;
-    if(token="ADLAHDQLDNKANDKDOHQOEQESVADWQEECC"){
-        res.status(200).send("Welcome")
-    }
-    else{
-        res.status(401).status("Wrong ID Token")
-    }
+    
+        try {
+            await verify(token);
+            console.log(newUser.id);
+            console.log(newUser.email);
+            console.log(newUser.username);
+            res.status(200).send({
+                method:"Post",
+                idToken:token,
+                userid:newUser.id,
+                name:newUser.username,
+                email:newUser.email
+               
+               }); 
+               
+        } catch (error) {
+            res.status(401).send({
+                error:error.message
+               });
+        }
+        
       
+    try {
+        const result=await db.collection("users").findOne({"id":newUser.id});
+        if(result==null){ 
+        db.collection("users").insertOne(newUser);
+        }
+    }
+    catch(err){
+        res.status(404).send({
+            err:err.message,
+            message:"User did not insert successfully"
+        }); 
+    }
     
 }); 
 
@@ -232,9 +255,7 @@ app.post("/home/create_goal/:userid", (req, res) => {
     //temporary postid is a concat of userid, date posted, and title of post. 
     var id = `${req.params.userid}${req.body.title}`;
     var userid = req.params.userid; 
-    if(userid!="123"){
-        res.status(404).send("user not exist in database");
-    }
+
     //fill in goal fields.
     var title = req.body.title; 
     var author = req.body.author; 
@@ -252,8 +273,6 @@ app.post("/home/create_goal/:userid", (req, res) => {
         res.status(400).send("request incomplete"); 
         return;
     }
-
-
 
     var goal = {
         id, 
@@ -287,7 +306,7 @@ app.put("/home/comment/:userid", (req, res) => {
     var userid = req.params.userid; 
     var now = new Date(Date.now()); 
     var date = `${now.getMonth()} ${now.getDay()}, ${now.getFullYear()}`;
-    if(id=="123"){
+
     db.collection("goals").updateOne({id}, {$push: {
         "comments": comment
     },
@@ -302,11 +321,7 @@ app.put("/home/comment/:userid", (req, res) => {
         }
     });
 
-    res.status(200).send("comment inserted"); 
-}
-else{
-    res.status(400).send("user not exist");
-}
+    res.send("comment inserted"); 
 });
 
 app.put("/home/like/:userid", (req, res) => {
@@ -314,7 +329,7 @@ app.put("/home/like/:userid", (req, res) => {
     var userid = req.params.userid; 
     var now = new Date(Date.now()); 
     var date = `${now.getMonth()} ${now.getDay()}, ${now.getFullYear()}`;
-    if(id=="123"){
+
     db.collection("goals").updateOne({id}, {$inc: {
         "likes" : 1
     },
@@ -329,11 +344,7 @@ app.put("/home/like/:userid", (req, res) => {
         }
     });
 
-    res.status(200).send("like recorded");  
-}
-else{
-    res.status(400).send("User not found");
-}
+    res.send("like recorded");  
 });
 
 // app.put("/home/update_goal/updateone", async (req, res) => {

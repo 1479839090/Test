@@ -13,7 +13,10 @@ const list = [
   schedule: [], 
   tag: "undergraduate",
   comments: ["Good Job", "I hope I pass too"], 
-  likes: 12
+  likes: 12,
+  updates : [],
+  status : 0,
+  needupdate : 0
   }, 
   {id: "test2", 
   title: "I want to get Diamond in League", 
@@ -24,7 +27,10 @@ const list = [
   schedule: [], 
   tag: "LoL",
   comments: ["Good Luck", "You suck"], 
-  likes: 0
+  likes: 0,
+  updates : [],
+  status : 0,
+  needupdate : 0
   }, 
   {id: "test3",
   title: "I want to become the Prime Minister of Canada", 
@@ -35,7 +41,10 @@ const list = [
   schedule: [], 
   tag: "employment",
   comments: ["I voted for you", "What qualifies you for this position?"], 
-  likes: 100
+  likes: 100,
+  updates: [],
+  status : 0,
+  needupdate : 0
   }
 ];
 
@@ -73,7 +82,7 @@ describe('insert', () => {
    
     await users.insertOne(test_user);
     for(var i = 0; i < 3; i++) { 
-      await goals.insertOne(init[i]); 
+      await goals.insertOne(list[i]); 
   }
 
     const insertedUser = await users.findOne({"id": "123"});

@@ -229,7 +229,7 @@ app.post("/login",async (req,res) => {
 
 });
 
-app.post("/home/create_goal/:userid", (req, res) => {
+app.post("/home/create_goal/:userid", async (req, res) => {
     //generate date string 
     var now = new Date(Date.now()); 
     var dateString = `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`; 
@@ -283,7 +283,7 @@ app.post("/home/create_goal/:userid", (req, res) => {
     res.status(200).send("goal created"); 
 });
 
-app.put("/home/comment/:userid", async(req, res) => {
+app.put("/home/comment/:userid", async (req, res) => {
 
     var comment = `${req.body.author} : ${req.body.comment}`;
     var id = req.body.id; 
@@ -313,7 +313,7 @@ app.put("/home/comment/:userid", async(req, res) => {
     res.send("comment inserted"); 
 });
 
-app.put("/home/like/:userid", (req, res) => { 
+app.put("/home/like/:userid", async (req, res) => { 
     var id = req.body.id; 
     var userid = req.params.userid; 
     var now = new Date(Date.now()); 

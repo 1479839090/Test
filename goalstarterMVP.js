@@ -72,6 +72,7 @@ const test_user = {
 }; 
 
 const tags= ["weightloss", "competitive sports", "running", "weight training", "medical school", "employment", "undergraduate", "masters/PhD", "diet", "LoL", "Valorant", "Overwatch"];
+
 //connect mongoclient 
 MongoClient.connect("mongodb://localhost:27017", {useNewUrlParser: true, useUnifiedTopology: true}, function(err, client) {
     if(err) {throw err;}  
@@ -97,81 +98,69 @@ MongoClient.connect("mongodb://localhost:27017", {useNewUrlParser: true, useUnif
 
 app.get("/home/:userid", async (req, res) => {
     var userid = req.params.userid; 
-    // console.log(userid);
+    console.log(userid);
 
-    // var fetchUser = async (name) => {
-    //     return db.collection("users").findOne({"id" : name}).then((user) => user); 
-    // };
-    // var fetchGoal = async (goal) => {
-    //     return db.collection("goals").findOne({"id" : goal}).then((goal) => goal); 
-    // };
-    // var fetchGoalbyTag = async (goal_tag, limit) => {
-    //     return db.collection("goals").findOne({"tag" : goal_tag}).limit(limit); 
-    // };
-    // var feed = []; 
-    // var limit = 10; 
+    var fetchUser = async (name) => {
+        return db.collection("users").findOne({"id" : name}).then((user) => user); 
+    };
+    var fetchGoal = async (goal) => {
+        return db.collection("goals").findOne({"id" : goal}).then((goal) => goal); 
+    };
+    var fetchGoalbyTag = async (goal_tag, limit) => {
+        return db.collection("goals").findOne({"tag" : goal_tag}).limit(limit); 
+    };
+    var feed = []; 
+    var limit = 10; 
 
-    // //first add the most recent goal of each friend
+    //first add the most recent goal of each friend
      
-    // let user = await fetchUser(userid); 
-    // console.log(user); 
-    // let friends = user.friendslist; 
-    // for(var i = 0; i < friends.length && feed.length < limit; i++) {
-    //     let friend = await fetchUser(friends[i]);  
-    //     var post = friend.posts[friend.posts.length - 1]; 
-    //     feed.push(post); 
-    // }
+    let user = await fetchUser(userid); 
+    console.log(user); 
+    let friends = user.friendslist; 
+    for(var i = 0; i < friends.length && feed.length < limit; i++) {
+        let friend = await fetchUser(friends[i]);  
+        var post = friend.posts[friend.posts.length - 1]; 
+        feed.push(post); 
+    }
 
-    // if(user.posts.length > 0 && feed.length < limit) {
-    //     let id = user.posts[user.posts.length - 1]; 
-    //     let post = await fetchGoal(id); 
-    //     let tag = post.tag; 
-    //     let posts = fetchGoalbyTag(tag, limit - feed.length); 
-    //     feed.concat(posts);
-    // }   
+    if(user.posts.length > 0 && feed.length < limit) {
+        let id = user.posts[user.posts.length - 1]; 
+        let post = await fetchGoal(id); 
+        let tag = post.tag; 
+        let posts = fetchGoalbyTag(tag, limit - feed.length); 
+        feed.concat(posts);
+    }   
 
-    // if(feed.length < limit) {
-    //     feed.concat(init); 
-    // }
+    if(feed.length < limit) {
+        feed.concat(init); 
+    }
 
-    // res.send(feed); 
-    if(userid=="123"){
-        res.status(200)
-       }
-       else{
-           res.status(400)
-       }
+    res.send(feed); 
 });
 
 app.get("/home/view_goals/:userid", async (req, res) => { 
     var userid = req.params.userid;
-    // var fetchGoal = async (goalid) => {
-    //     return db.collection("goals").findOne({"id" : goalid}).then((goal) => goal);
-    // };
-    // var fetchId = async (name) => {
-    //     return db.collection("users").findOne({"id" : name}, {"posts":1}).then((user) => user.posts); 
-    // };
-    // let goalids = await fetchId(userid);  
-    // console.log(goalids);
-    // var goals = [];
-    // for(var i = 0; i < goalids.length; i++) {
-    //     let goal = await fetchGoal(goalids[i]);
-    //     // var d = Date.parse(goal.schedule[goal.status]);
-    //     // var d_now = new Date(); 
-    //     // if(d_now.now() >= d) {
-    //     //     goal.needupdate = 1; 
-    //     // }
-    //     //console.log(goal); 
-    //     JSON.stringify(goal); 
-    //     goals.push(goal); 
-    // }
-    // res.send(goals); 
-    if(userid=="123"){
-     res.status(200)
+    var fetchGoal = async (goalid) => {
+        return db.collection("goals").findOne({"id" : goalid}).then((goal) => goal);
+    };
+    var fetchId = async (name) => {
+        return db.collection("users").findOne({"id" : name}, {"posts":1}).then((user) => user.posts); 
+    };
+    let goalids = await fetchId(userid);  
+    console.log(goalids);
+    var goals = [];
+    for(var i = 0; i < goalids.length; i++) {
+        let goal = await fetchGoal(goalids[i]);
+        // var d = Date.parse(goal.schedule[goal.status]);
+        // var d_now = new Date(); 
+        // if(d_now.now() >= d) {
+        //     goal.needupdate = 1; 
+        // }
+        //console.log(goal); 
+        JSON.stringify(goal); 
+        goals.push(goal); 
     }
-    else{
-        res.status(400)
-    }
+    res.send(goals); 
 });
 
 let newUser={
@@ -204,8 +193,9 @@ async function verify(token) {
 app.post("/login",async (req,res) => {
     var token =req.body.idToken; 
      //console.log(token);
-    if(token=="ADLAHDQLDNKANDKDOHQOEQESVADWQEECC"){
-        
+    
+        try {
+            await verify(token);
             console.log(newUser.id);
             console.log(newUser.email);
             console.log(newUser.username);
@@ -217,16 +207,26 @@ app.post("/login",async (req,res) => {
                 email:newUser.email
                
                }); 
-            }
                
-  else{
+        } catch (error) {
             res.status(401).send({
-                error:"User not exist"
+                error:error.message
                });
+        }
         
-            }
       
-
+    try {
+        const result=await db.collection("users").findOne({"id":newUser.id});
+        if(result==null){ 
+        db.collection("users").insertOne(newUser);
+        }
+    }
+    catch(err){
+        res.status(404).send({
+            err:err.message,
+            message:"User did not insert successfully"
+        }); 
+    }
     
 }); 
 
@@ -295,12 +295,8 @@ app.post("/home/create_goal/:userid", (req, res) => {
             "posts": id
         }
     });
-    if(userid!="123"){
-        res.status(404);
-    }
-    else{
+
     res.status(200).send("goal created"); 
-    }
 });
 
 app.put("/home/comment/:userid", (req, res) => {
@@ -324,12 +320,8 @@ app.put("/home/comment/:userid", (req, res) => {
             "comments": id
         }
     });
-    if(userid!="123"){
-        res.status(404);
-    }
-    else{
-    res.status(200).send("comment inserted"); 
-    }
+
+    res.send("comment inserted"); 
 });
 
 app.put("/home/like/:userid", (req, res) => {
@@ -351,12 +343,8 @@ app.put("/home/like/:userid", (req, res) => {
             "likes": id 
         }
     });
-   if(userid!="123"){
-    res.status(404);
-   }
-   else{
-    res.status(200).send("like recorded"); 
-   } 
+
+    res.send("like recorded");  
 });
 
 // app.put("/home/update_goal/updateone", async (req, res) => {

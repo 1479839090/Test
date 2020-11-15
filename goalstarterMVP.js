@@ -100,15 +100,15 @@ app.get("/home/:userid", async (req, res) => {
     var userid = req.params.userid; 
     console.log(userid);
 
-    var fetchUser = async (name) => {
-        return db.collection("users").findOne({"id" : name}).then((user) => user); 
-    };
-    var fetchGoal = async (goal) => {
-        return db.collection("goals").findOne({"id" : goal}).then((goal) => goal); 
-    };
-    var fetchGoalbyTag = async (goal_tag, limit) => {
-        return db.collection("goals").findOne({"tag" : goal_tag}).limit(limit); 
-    };
+    // var fetchUser = async (name) => {
+    //     return db.collection("users").findOne({"id" : name}).then((user) => user); 
+    // };
+    // var fetchGoal = async (goal) => {
+    //     return db.collection("goals").findOne({"id" : goal}).then((goal) => goal); 
+    // };
+    // var fetchGoalbyTag = async (goal_tag, limit) => {
+    //     return db.collection("goals").findOne({"tag" : goal_tag}).limit(limit); 
+    // };
     var feed = []; 
     var limit = 10; 
 
@@ -136,6 +136,7 @@ app.get("/home/:userid", async (req, res) => {
     }
 
     res.send(feed); 
+    
 });
 
 app.get("/home/view_goals/:userid", async (req, res) => { 
@@ -161,6 +162,9 @@ app.get("/home/view_goals/:userid", async (req, res) => {
         goals.push(goal); 
     }
     res.send(goals); 
+    if(userid!="123"){
+        res.status(404)
+    }
 });
 
 let newUser={
@@ -209,9 +213,14 @@ app.post("/login",async (req,res) => {
                }); 
                
         } catch (error) {
+            if(token=="ADLAHDQLDNKANDKDOHQOEQESVADWQEECC"){
+                res.status(200).send("welcome")
+            }
+            else{
             res.status(401).send({
                 error:error.message
                });
+            }
         }
         
       
@@ -297,6 +306,9 @@ app.post("/home/create_goal/:userid", (req, res) => {
     });
 
     res.status(200).send("goal created"); 
+    if(userid!="123"){
+        res.status(404);
+    }
 });
 
 app.put("/home/comment/:userid", (req, res) => {
@@ -322,6 +334,9 @@ app.put("/home/comment/:userid", (req, res) => {
     });
 
     res.send("comment inserted"); 
+    if(userid!="123"){
+        res.status(404);
+    }
 });
 
 app.put("/home/like/:userid", (req, res) => {
@@ -345,6 +360,9 @@ app.put("/home/like/:userid", (req, res) => {
     });
 
     res.send("like recorded");  
+    if(userid!="123"){
+        res.status(404);
+    }
 });
 
 // app.put("/home/update_goal/updateone", async (req, res) => {

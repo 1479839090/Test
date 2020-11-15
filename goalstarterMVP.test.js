@@ -333,7 +333,7 @@ describe('testing wrong login',function(){
       done();    
   })
 })
-
+})
 describe('testing GET userid',function(){
   it('responds to GET /home/view_goals/123',async(done)=>{
       const response=await request.get('/home/view_goals/123');

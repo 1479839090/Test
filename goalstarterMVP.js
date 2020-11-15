@@ -265,7 +265,7 @@ app.post("/home/create_goal/:userid", async (req, res) => {
     var id = `${req.params.userid}${req.body.title}`;
     var userid = req.params.userid; 
     const result=await db.collection("users").findOne({"id":userid});
-    if(result==NULL){
+    if(result==null){
         res.status(404).send("User Not found");
     }
     else{
@@ -325,7 +325,7 @@ app.put("/home/comment/:userid",async (req, res) => {
     var now = new Date(Date.now()); 
     var date = `${now.getMonth()} ${now.getDay()}, ${now.getFullYear()}`;
     const result=await db.collection("users").findOne({"id":userid});
-    if(result==NULL){
+    if(result==null){
         res.status(404).send("User Not found");
     }
     else{
@@ -357,7 +357,7 @@ app.put("/home/like/:userid",async (req, res) => {
     var now = new Date(Date.now()); 
     var date = `${now.getMonth()} ${now.getDay()}, ${now.getFullYear()}`;
     const result=await db.collection("users").findOne({"id":userid});
-    if(result==NULL){
+    if(result==null){
         res.status(404).send("User Not found");
     }
     else{

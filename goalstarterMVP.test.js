@@ -69,22 +69,16 @@ describe('insert', () => {
     connection = await MongoClient.connect("mongodb://localhost:27017", {
       useNewUrlParser: true,
     });
-    db = await connection.db("dbtest");
+    db = await connection.db("dbtestt");
   });
 
   beforeEach(async () => {
-    await db.collection("dbtest").deleteMany({});
+    await db.collection("dbtestt").deleteMany({});
   });
 
   it('should insert a doc into collection', async () => {
-    const users = db.collection('users');
-    const goals=db.collection('goals');
-   
+    const users = db.collection('user');
     await users.insertOne(test_user);
-    for(var i = 0; i < 3; i++) { 
-      await goals.insertOne(list[i]); 
-  }
-
     const insertedUser = await users.findOne({"id": "123"});
     expect(insertedUser).toEqual(test_user);
   });

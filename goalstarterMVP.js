@@ -105,13 +105,13 @@ app.get("/home/:userid", async (req, res) => {
         return;
     }
      var fetchUser = async (name) => {
-        return db.collection("users").findOne({"id" : name}).then((user) => user); 
+        return await db.collection("users").findOne({"id" : name}).then((user) => user); 
     };
     var fetchGoal = async (goal) => {
-        return db.collection("goals").findOne({"id" : goal}).then((goal) => goal); 
+        return await db.collection("goals").findOne({"id" : goal}).then((goal) => goal); 
     };
     var fetchGoalbyTag = async (goal_tag, limit) => {
-        return db.collection("goals").findOne({"tag" : goal_tag}).limit(limit); 
+        return await db.collection("goals").findOne({"tag" : goal_tag}).limit(limit); 
     };
     var feed = []; 
     var limit = 10; 

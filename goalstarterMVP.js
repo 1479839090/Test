@@ -197,46 +197,49 @@ async function verify(token) {
     // const domain = payload['hd'];
   }
 
-app.post("/login",async (req,res) => {
-    var token =req.body.idToken; 
-     //console.log(token);
+  app.post('/login',async (req,res)=>{
+    var token =req.body.idToken
+     console.log(token)
     
-       
-            if(token!="ADLAHDQLDNKANDKDOHQOEQESVADWQEECC"){
-           
-                
-                res.status(401).send({
-                    error:"Unauthorized"
-                   });
-                   return;
-            }
-          
-            console.log(newUser.id);
-            console.log(newUser.email);
-            console.log(newUser.username);
+        try {
+            await verify(token)
+            console.log(newUser.id)
+            console.log(newUser.email)
+            console.log(newUser.username)
             res.status(200).send({
-                method:"Post",
+                method:'Post',
                 idToken:token,
                 userid:newUser.id,
                 name:newUser.username,
                 email:newUser.email
                
-               }); 
-    try {
-        const result=await db.collection("users").findOne({"id":newUser.id});
-        if(result==null){ 
-        db.collection("users").insertOne(newUser);
+               })
+               
+        } catch (error) {
+            res.status(401).send({
+                error:error.message
+               })
         }
+        
+      
+     try{
+        const result=await db.collection("users").findOne({"id":newUser.id});
+       if(result==null){ 
+      db.collection("users").insertOne(newUser);
+       }
     }
     catch(err){
         res.status(404).send({
             err:err.message,
-            message:"User did not insert successfully"
-        }); 
+            message:'User did not insert successfully'
+        })
     }
-    res.status(200).send("welcome")
-}); 
-
+    
+           })
+        
+        
+        
+    
 
    app.post("/firebase/notification", (req, res ) => {
     const  registrationToken = req.body.registrationToken;  

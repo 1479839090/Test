@@ -85,19 +85,6 @@ describe('insert', () => {
 });
 
 
-describe('testing feed manager mock', function () {
- 
-  it('responds to GET /home/123', async (done) => {
-  const response = await request.get('/home/123'); 
-
-  expect(response.status).toBe(200); 
-  expect(response.body).toStrictEqual(list); 
-  done();
-});
-}); 
-
-
-
 describe('testing fetching user information with correct body',function(){
   it('responds to POST /home/create_goal/123',async(done)=>{
     const body={ 

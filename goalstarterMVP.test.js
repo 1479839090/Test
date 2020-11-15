@@ -252,3 +252,5 @@ describe('testing PUT on like with wrong userid',function(){
       done();   
   })
 })
+
+module.exports={db};

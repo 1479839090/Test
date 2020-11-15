@@ -6,6 +6,7 @@ var {notificationOptions}=require("./push");
 const bodyParser=require("body-parser");
 const cors=require("cors");
 var app = express();
+var db=require("./goalstarterMVP.test");
 app.use(express.json()); 
 app.use(cors());
 app.use(bodyParser.urlencoded({extended:false}));

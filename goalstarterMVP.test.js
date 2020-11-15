@@ -69,7 +69,7 @@ describe('insert', () => {
     connection = await MongoClient.connect("mongodb://localhost:27017", {
       useNewUrlParser: true,
     });
-    db = await connection.db("dbtestt");
+    db = await connection.db("dbtest");
   });
 
   beforeEach(async () => {
@@ -83,6 +83,19 @@ describe('insert', () => {
     expect(insertedUser).toEqual(test_user);
   });
 });
+
+
+describe('testing feed manager mock', function () {
+ 
+  it('responds to GET /home/123', async (done) => {
+  const response = await request.get('/home/123'); 
+
+  expect(response.status).toBe(200); 
+  expect(response.body).toStrictEqual(list); 
+  done();
+});
+}); 
+
 
 
 describe('testing fetching user information with correct body',function(){

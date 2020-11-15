@@ -90,7 +90,7 @@ const tags= ["weightloss", "competitive sports", "running", "weight training", "
     });
 
     for(var i = 0; i < 3; i++) { 
-      await  db.collection("goals").insertOne(init[i]); 
+      await db.collection("goals").insertOne(init[i]); 
     }
 
     await db.collection("users").insertOne(test_user); 

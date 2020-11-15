@@ -5,7 +5,7 @@ node_js:
 - '12'
 
 services:
-  - mongodb
+- mongodb
 
 before_install:
 - npm update
@@ -14,16 +14,7 @@ install:
 - npm install
 
 before_script:
-  - sleep 15
-  - mongo mydb_test --eval 'db.createUser({  
-    "id":"123",
-    "username":"Tor Ammodt",
-    "email":"de1soc@gmail.com",
-    "friendslist":[],
-    "posts":[],
-    "comments":[],
-    "likes":[]});'
-
+- sleep 15
 script:
 - npm test
 

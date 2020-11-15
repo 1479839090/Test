@@ -99,7 +99,11 @@ const tags= ["weightloss", "competitive sports", "running", "weight training", "
 app.get("/home/:userid", async (req, res) => {
     var userid = req.params.userid; 
     console.log(userid);
-
+    const result=await db.collection("users").findOne({"id":userid});
+    if(result==null){
+        res.status(404).send("User Not found");
+        return;
+    }
      var fetchUser = async (name) => {
         return db.collection("users").findOne({"id" : name}).then((user) => user); 
     };
@@ -132,7 +136,8 @@ app.get("/home/:userid", async (req, res) => {
     }   
 
     if(feed.length < limit) {
-        feed.concat(init); 
+        res.send(init);
+        return;
     }
 
     res.send(feed); 

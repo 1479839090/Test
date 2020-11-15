@@ -306,12 +306,11 @@ app.post("/home/create_goal/:userid", (req, res) => {
     });
 
    
-    if(userid!="123"){
-        res.status(404);
-    }
-    else{
+    
+    
+  
     res.status(200).send("goal created");
-    }
+    
 });
 
 app.put("/home/comment/:userid", (req, res) => {
@@ -337,12 +336,11 @@ app.put("/home/comment/:userid", (req, res) => {
     });
 
   
-    if(userid!="123"){
-        res.status(404);
-    }
-    else{
+  
+    
+
     res.send("comment inserted"); 
-    }
+    
 });
 
 app.put("/home/like/:userid", (req, res) => {
@@ -366,12 +364,9 @@ app.put("/home/like/:userid", (req, res) => {
     });
 
     
-    if(userid!="123"){
-        res.status(404);
-    }
-    else{
+    
         res.send("like recorded"); 
-    }
+    
 });
 
 // app.put("/home/update_goal/updateone", async (req, res) => {

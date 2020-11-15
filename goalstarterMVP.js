@@ -72,7 +72,7 @@ const test_user = {
 }; 
 
 const tags= ["weightloss", "competitive sports", "running", "weight training", "medical school", "employment", "undergraduate", "masters/PhD", "diet", "LoL", "Valorant", "Overwatch"];
-
+var db=null;
 //connect mongoclient 
 MongoClient.connect("mongodb://localhost:27017", {useNewUrlParser: true, useUnifiedTopology: true}, function(err, client) {
     if(err) {throw err;}  
@@ -141,6 +141,11 @@ app.get("/home/:userid", async (req, res) => {
 
 app.get("/home/view_goals/:userid", async (req, res) => { 
     var userid = req.params.userid;
+    const result=await db.collection("users").findOne({"id":userid});
+    if(result==null){
+        res.status(404).send("User Not found");
+        return;
+    }
     var fetchGoal = async (goalid) => {
         return db.collection("goals").findOne({"id" : goalid}).then((goal) => goal);
     };
@@ -161,10 +166,8 @@ app.get("/home/view_goals/:userid", async (req, res) => {
         JSON.stringify(goal); 
         goals.push(goal); 
     }
-    res.send(goals); 
-    if(userid!="123"){
-        res.status(404)
-    }
+    res.status(200).send(goals); 
+   
 });
 
 let newUser={
@@ -185,7 +188,7 @@ async function verify(token) {
         //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
     }); 
     const payload = ticket.getPayload();
-  
+   
     newUser.id = ticket.getUserId();
      newUser.email=payload["email"];    
      newUser.username=payload["name"];
@@ -267,8 +270,9 @@ app.post("/home/create_goal/:userid", async (req, res) => {
     const result=await db.collection("users").findOne({"id":userid});
     if(result==null){
         res.status(404).send("User Not found");
+        return;
     }
-    else{
+    
     //fill in goal fields.
     var title = req.body.title; 
     var author = req.body.author; 
@@ -314,7 +318,7 @@ app.post("/home/create_goal/:userid", async (req, res) => {
     
   
     res.status(200).send("goal created");
-}
+
 });
 
 app.put("/home/comment/:userid",async (req, res) => {

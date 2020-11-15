@@ -257,14 +257,18 @@ app.post("/login",async (req,res) => {
 
 });
 
-app.post("/home/create_goal/:userid", (req, res) => {
+app.post("/home/create_goal/:userid", async (req, res) => {
     //generate date string 
     var now = new Date(Date.now()); 
     var dateString = `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`; 
     //temporary postid is a concat of userid, date posted, and title of post. 
     var id = `${req.params.userid}${req.body.title}`;
     var userid = req.params.userid; 
-
+    const result=await db.collection("users").findOne({"id":userid});
+    if(result==NULL){
+        res.status(404).send("User Not found");
+    }
+    else{
     //fill in goal fields.
     var title = req.body.title; 
     var author = req.body.author; 
@@ -310,17 +314,21 @@ app.post("/home/create_goal/:userid", (req, res) => {
     
   
     res.status(200).send("goal created");
-    
+}
 });
 
-app.put("/home/comment/:userid", (req, res) => {
+app.put("/home/comment/:userid",async (req, res) => {
 
     var comment = `${req.body.author} : ${req.body.comment}`;
     var id = req.body.id; 
     var userid = req.params.userid; 
     var now = new Date(Date.now()); 
     var date = `${now.getMonth()} ${now.getDay()}, ${now.getFullYear()}`;
-
+    const result=await db.collection("users").findOne({"id":userid});
+    if(result==NULL){
+        res.status(404).send("User Not found");
+    }
+    else{
     db.collection("goals").updateOne({id}, {$push: {
         "comments": comment
     },
@@ -340,15 +348,19 @@ app.put("/home/comment/:userid", (req, res) => {
     
 
     res.send("comment inserted"); 
-    
+}
 });
 
-app.put("/home/like/:userid", (req, res) => {
+app.put("/home/like/:userid",async (req, res) => {
     var id = req.body.id; 
     var userid = req.params.userid; 
     var now = new Date(Date.now()); 
     var date = `${now.getMonth()} ${now.getDay()}, ${now.getFullYear()}`;
-
+    const result=await db.collection("users").findOne({"id":userid});
+    if(result==NULL){
+        res.status(404).send("User Not found");
+    }
+    else{
     db.collection("goals").updateOne({id}, {$inc: {
         "likes" : 1
     },
@@ -366,7 +378,7 @@ app.put("/home/like/:userid", (req, res) => {
     
     
         res.send("like recorded"); 
-    
+}
 });
 
 // app.put("/home/update_goal/updateone", async (req, res) => {

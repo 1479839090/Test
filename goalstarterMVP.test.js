@@ -98,7 +98,7 @@ describe('testing fetching user information with body with wrong userid',functio
 describe('testing correct login',function(){
   it('responds to POST /login',async(done)=>{
       const Body={idtoken:"ADLAHDQLDNKANDKDOHQOEQESVADWQEECC"};
-      await request.post('/home/create_goal/123').send(Body).expect(200);
+      await request.post('/login').send(Body).expect(200);
       done();    
   })
 })
@@ -107,7 +107,7 @@ describe('testing correct login',function(){
 describe('testing wrong login',function(){
   it('responds to POST /login',async(done)=>{
       const Body={idtoken:"LADJOQJDNLNLANIIWQIDQDWQWQEDLLLLOE"};
-      await request.post('/home/create_goal/123').send(Body).expect(401);
+      await request.post('/login').send(Body).expect(401);
       done();    
   })
 })

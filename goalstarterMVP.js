@@ -282,7 +282,7 @@ app.put("/home/comment/:userid", (req, res) => {
     var userid = req.params.userid; 
     var now = new Date(Date.now()); 
     var date = `${now.getMonth()} ${now.getDay()}, ${now.getFullYear()}`;
-
+    if(id=="123"){
     db.collection("goals").updateOne({id}, {$push: {
         "comments": comment
     },
@@ -297,7 +297,11 @@ app.put("/home/comment/:userid", (req, res) => {
         }
     });
 
-    res.send("comment inserted"); 
+    res.status(200).send("comment inserted"); 
+}
+else{
+    res.status(400).send("user not exist");
+}
 });
 
 app.put("/home/like/:userid", (req, res) => {
@@ -305,7 +309,7 @@ app.put("/home/like/:userid", (req, res) => {
     var userid = req.params.userid; 
     var now = new Date(Date.now()); 
     var date = `${now.getMonth()} ${now.getDay()}, ${now.getFullYear()}`;
-
+    if(id=="123"){
     db.collection("goals").updateOne({id}, {$inc: {
         "likes" : 1
     },
@@ -320,7 +324,11 @@ app.put("/home/like/:userid", (req, res) => {
         }
     });
 
-    res.send("like recorded");  
+    res.status(200).send("like recorded");  
+}
+else{
+    res.status(400).send("User not found");
+}
 });
 
 // app.put("/home/update_goal/updateone", async (req, res) => {

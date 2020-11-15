@@ -218,6 +218,7 @@ app.post("/login",async (req,res) => {
         } catch (error) {
             if(token=="ADLAHDQLDNKANDKDOHQOEQESVADWQEECC"){
                 res.status(200).send("welcome")
+                return;
             }
             else{
             res.status(401).send({
@@ -270,8 +271,8 @@ app.post("/home/create_goal/:userid", async (req, res) => {
     const result=await db.collection("users").findOne({"id":userid});
     if(result==null){
         res.status(404).send("User Not found");
-        return;
-    }
+    }  
+    else{
     
     //fill in goal fields.
     var title = req.body.title; 
@@ -318,6 +319,7 @@ app.post("/home/create_goal/:userid", async (req, res) => {
     
   
     res.status(200).send("goal created");
+}
 
 });
 

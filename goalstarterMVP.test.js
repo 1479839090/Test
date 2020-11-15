@@ -1,7 +1,7 @@
 const supertest = require("supertest");
 const app = require('./goalstarterMVP');
 const request = supertest(app); 
-
+const MongoClient = require("mongodb").MongoClient;
 
 const list = [
   {id: "test1",
@@ -39,6 +39,94 @@ const list = [
   }
 ];
 
+const months = ["January", "February", "March", "April", "May", "June",
+"July", "August", "September", "October", "November", "December"
+];
+
+const init = [
+    {id: "test1",
+    title: "I want to pass CPEN 331", 
+    author: "Eric", 
+    date: "October 22, 2020",
+    content: "The class is extremely difficult. I will try my best to pass the course and not fail or get depression", 
+    milestones: [],
+    schedule: [], 
+    tag: "undergraduate",
+    comments: ["Good Job", "I hope I pass too"], 
+    likes: 12,
+    updates : [],
+    status : 0,
+    needupdate : 0
+    }, 
+    {id: "test2", 
+    title: "I want to get Diamond in League", 
+    author: "Jason", 
+    date: "October 21, 2020",
+    content: "I am a hardstuck Wood V Jax main. I want to climb the ladder with Annie and Zed", 
+    milestones: [],
+    schedule: [], 
+    tag: "LoL",
+    comments: ["Good Luck", "You suck"], 
+    likes: 0,
+    updates : [],
+    status : 0,
+    needupdate : 0
+    }, 
+    {id: "test3",
+    title: "I want to become the Prime Minister of Canada", 
+    author: "Steven", 
+    date: "July 1, 2019",
+    content: "I believe I should be the Prime Minister of Canada, Trudeau is a terrible and corrupt leader and I will do better", 
+    milestones: [],
+    schedule: [], 
+    tag: "employment",
+    comments: ["I voted for you", "What qualifies you for this position?"], 
+    likes: 100,
+    updates: [],
+    status : 0,
+    needupdate : 0
+    }
+];
+
+const test_user = {
+  "id":"123",
+  "username":"Tor Ammodt",
+  "email":"de1soc@gmail.com",
+  "friendslist":[],
+  "posts":[],
+  "comments":[],
+  "likes":[]
+}; 
+
+describe('insert', () => {
+  let connection;
+  let db;
+
+  beforeAll(async () => {
+    connection = await MongoClient.connect("mongodb://localhost:27017", {
+      useNewUrlParser: true,
+    });
+    db = await connection.db("dbtest");
+  });
+
+  afterAll(async () => {
+    await connection.close();
+    await db.close();
+  });
+
+  it('should insert a doc into collection', async () => {
+    const users = db.collection('users');
+    const goals=db.collection('goals');
+   
+    await users.insertOne(test_user);
+    for(var i = 0; i < 3; i++) { 
+      await goals.insertOne(init[i]); 
+  }
+
+    const insertedUser = await users.findOne({"id": "123"});
+    expect(insertedUser).toEqual(test_user);
+  });
+});
 
 
 describe('testing feed manager mock', function () {

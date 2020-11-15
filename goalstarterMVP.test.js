@@ -97,10 +97,10 @@ const test_user = {
   "comments":[],
   "likes":[]
 }; 
-
+let db;
 describe('insert', () => {
   let connection;
-  let db;
+
 
   beforeAll(async () => {
     connection = await MongoClient.connect("mongodb://localhost:27017", {

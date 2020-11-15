@@ -161,7 +161,7 @@ describe('testing feed manager mock', function () {
   done();
 });
 }); 
-
+});
 
 
 describe('testing fetching user information with correct body',function(){

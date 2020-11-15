@@ -73,11 +73,11 @@ describe('insert', () => {
   });
 
   beforeEach(async () => {
-    await db.collection("dbtestt").deleteMany({});
+    await db.collection("dbtest").deleteMany({});
   });
 
   it('should insert a doc into collection', async () => {
-    const users = db.collection('user');
+    const users = db.collection('users');
     await users.insertOne(test_user);
     const insertedUser = await users.findOne({"id": "123"});
     expect(insertedUser).toEqual(test_user);

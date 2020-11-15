@@ -204,7 +204,7 @@ async function verify(token) {
 app.post("/login",async (req,res) => {
     var token =req.body.idToken; 
      //console.log(token);
-    if(token="ADLAHDQLDNKANDKDOHQOEQESVADWQEECC"){
+    if(token=="ADLAHDQLDNKANDKDOHQOEQESVADWQEECC"){
         
             console.log(newUser.id);
             console.log(newUser.email);
@@ -221,7 +221,7 @@ app.post("/login",async (req,res) => {
                
   else{
             res.status(401).send({
-                error:error.message
+                error:"User not exist"
                });
         
             }
@@ -320,8 +320,10 @@ app.put("/home/comment/:userid", (req, res) => {
             "comments": id
         }
     });
-
-    res.send("comment inserted"); 
+    if(id!="123"){
+        res.status(404);
+    }
+    res.status(200).send("comment inserted"); 
 });
 
 app.put("/home/like/:userid", (req, res) => {
@@ -343,8 +345,10 @@ app.put("/home/like/:userid", (req, res) => {
             "likes": id 
         }
     });
-
-    res.send("like recorded");  
+   if(id!="123"){
+    res.status(404);
+   }
+    res.status(200).send("like recorded");  
 });
 
 // app.put("/home/update_goal/updateone", async (req, res) => {

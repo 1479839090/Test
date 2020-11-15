@@ -109,7 +109,7 @@ describe('insert', () => {
     db = await connection.db("dbtest");
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await connection.close();
     await db.close();
   });
@@ -140,7 +140,7 @@ describe('testing feed manager mock', function () {
     db = await connection.db("dbtest");
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await connection.close();
     await db.close();
   });

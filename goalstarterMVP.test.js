@@ -79,7 +79,7 @@ describe('testing fetching user information with body with NUll value ',function
       schedule: "Time To Sleep",
       tag: "tag"
     }
-      await request.post('/home/create_goal/:123').send(FalseBody).expect(404);
+      await request.post('/home/create_goal/:123').send(FalseBody).expect(400);
       done();    
   })
 })
@@ -96,7 +96,7 @@ describe('testing fetching user information with body with wrong userid',functio
       schedule: "Time To Sleep",
       tag: "tag"
     }
-      await request.post('/home/create_goal/:321').send(FalseBody2).expect(400);
+      await request.post('/home/create_goal/:321').send(FalseBody2).expect(404);
       done();    
   })
 })
@@ -112,7 +112,7 @@ describe('testing correct login',function(){
 
 describe('testing wrong login',function(){
   it('responds to POST /home/create_goal/:123',async(done)=>{
-      const Body={idtoken="LADJOQJDNLNLANIIWQIDQDWQWQEDLLLLOE"};
+      const Body={idtoken:"LADJOQJDNLNLANIIWQIDQDWQWQEDLLLLOE"};
       await request.post('/home/create_goal/:123').send(Body).expect(401);
       done();    
   })

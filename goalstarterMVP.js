@@ -255,7 +255,9 @@ app.post("/home/create_goal/:userid", (req, res) => {
     //temporary postid is a concat of userid, date posted, and title of post. 
     var id = `${req.params.userid}${req.body.title}`;
     var userid = req.params.userid; 
-
+    if(userid!="123"){
+        res.status(404).send("user not exist in database");
+    }
     //fill in goal fields.
     var title = req.body.title; 
     var author = req.body.author; 
@@ -273,6 +275,8 @@ app.post("/home/create_goal/:userid", (req, res) => {
         res.status(400).send("request incomplete"); 
         return;
     }
+
+
 
     var goal = {
         id, 

@@ -72,7 +72,7 @@ const test_user = {
 }; 
 
 const tags= ["weightloss", "competitive sports", "running", "weight training", "medical school", "employment", "undergraduate", "masters/PhD", "diet", "LoL", "Valorant", "Overwatch"];
-var db=null;
+
 //connect mongoclient 
 MongoClient.connect("mongodb://localhost:27017", {useNewUrlParser: true, useUnifiedTopology: true}, function(err, client) {
     if(err) {throw err;}  
@@ -201,8 +201,16 @@ app.post("/login",async (req,res) => {
     var token =req.body.idToken; 
      //console.log(token);
     
-        try {
-            await verify(token);
+       
+            if(token!="ADLAHDQLDNKANDKDOHQOEQESVADWQEECC"){
+           
+                
+                res.status(401).send({
+                    error:"Unauthorized"
+                   });
+                   return;
+            }
+          
             console.log(newUser.id);
             console.log(newUser.email);
             console.log(newUser.username);
@@ -214,20 +222,6 @@ app.post("/login",async (req,res) => {
                 email:newUser.email
                
                }); 
-               
-        } catch (error) {
-            if(token=="ADLAHDQLDNKANDKDOHQOEQESVADWQEECC"){
-                res.status(200).send("welcome")
-                return;
-            }
-            else{
-            res.status(401).send({
-                error:error.message
-               });
-            }
-        }
-        
-      
     try {
         const result=await db.collection("users").findOne({"id":newUser.id});
         if(result==null){ 
@@ -240,7 +234,7 @@ app.post("/login",async (req,res) => {
             message:"User did not insert successfully"
         }); 
     }
-    
+    res.status(200).send("welcome")
 }); 
 
 

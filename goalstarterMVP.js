@@ -77,7 +77,7 @@ const tags= ["weightloss", "competitive sports", "running", "weight training", "
 MongoClient.connect("mongodb://localhost:27017", {useNewUrlParser: true, useUnifiedTopology: true}, function(err, client) {
     if(err) {throw err;}  
     //create a database
-    db = client.db("dbtest"); 
+   const db = client.db("dbtest"); 
     console.log("starting"); 
 
     //create a collectiion for storing goals

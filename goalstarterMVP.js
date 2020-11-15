@@ -77,7 +77,7 @@ const tags= ["weightloss", "competitive sports", "running", "weight training", "
 MongoClient.connect("mongodb://localhost:27017", {useNewUrlParser: true, useUnifiedTopology: true}, function(err, client) {
     if(err) {throw err;}  
     //create a database
-   const db = client.db("dbtest"); 
+    db = client.db("dbtest"); 
     console.log("starting"); 
 
     //create a collectiion for storing goals
@@ -92,56 +92,82 @@ MongoClient.connect("mongodb://localhost:27017", {useNewUrlParser: true, useUnif
     for(var i = 0; i < 3; i++) { 
         db.collection("goals").insertOne(init[i]); 
     }
+
+    db.collection("users").insertOne(test_user); 
 });  
 
 app.get("/home/:userid", async (req, res) => {
     var userid = req.params.userid; 
     console.log(userid);
 
+     var fetchUser = async (name) => {
+        return db.collection("users").findOne({"id" : name}).then((user) => user); 
+    };
+    var fetchGoal = async (goal) => {
+        return db.collection("goals").findOne({"id" : goal}).then((goal) => goal); 
+    };
+    var fetchGoalbyTag = async (goal_tag, limit) => {
+        return db.collection("goals").findOne({"tag" : goal_tag}).limit(limit); 
+    };
     var feed = []; 
     var limit = 10; 
 
     //first add the most recent goal of each friend
      
-    let user = await  db.collection("users").findOne({"id" : userid}); 
-    if(user === null) {
-        res.status(404).end(); 
-    }
+    let user = await fetchUser(userid); 
+    console.log(user); 
     let friends = user.friendslist; 
     for(var i = 0; i < friends.length && feed.length < limit; i++) {
-        let friend = db.collection("users").findOne({"id" : userid});  
+        let friend = await fetchUser(friends[i]);  
         var post = friend.posts[friend.posts.length - 1]; 
         feed.push(post); 
     }
 
     if(user.posts.length > 0 && feed.length < limit) {
         let id = user.posts[user.posts.length - 1]; 
-        let post = await db.collection("goals").findOne({"id" : id}); 
+        let post = await fetchGoal(id); 
         let tag = post.tag; 
-        let posts = await db.collection("goals").find({"tag" : tag}).limit(feed.length - limit).toArray(); 
-        console.log(posts); 
-        feed = feed.concat(posts);
+        let posts = fetchGoalbyTag(tag, limit - feed.length); 
+        feed.concat(posts);
     }   
 
     if(feed.length < limit) {
-        feed = feed.concat(init); 
+        feed.concat(init); 
     }
-    console.log(feed); 
+
     res.send(feed); 
+    
 });
 
 app.get("/home/view_goals/:userid", async (req, res) => { 
     var userid = req.params.userid;
-    let user = await db.collection("users").findOne({"id" : userid}, {"posts":1});  
-    let goalids = user.posts; 
+    const result=await db.collection("users").findOne({"id":userid});
+    if(result==null){
+        res.status(404).send("User Not found");
+        return;
+    }
+    var fetchGoal = async (goalid) => {
+        return db.collection("goals").findOne({"id" : goalid}).then((goal) => goal);
+    };
+    var fetchId = async (name) => {
+        return db.collection("users").findOne({"id" : name}, {"posts":1}).then((user) => user.posts); 
+    };
+    let goalids = await fetchId(userid);  
     console.log(goalids);
     var goals = [];
     for(var i = 0; i < goalids.length; i++) {
-        let goal = await db.collection("goals").findOne({"id" : goalids[i]});
+        let goal = await fetchGoal(goalids[i]);
+        // var d = Date.parse(goal.schedule[goal.status]);
+        // var d_now = new Date(); 
+        // if(d_now.now() >= d) {
+        //     goal.needupdate = 1; 
+        // }
+        //console.log(goal); 
         JSON.stringify(goal); 
         goals.push(goal); 
     }
-    res.send(goals); 
+    res.status(200).send(goals); 
+   
 });
 
 let newUser={
@@ -162,7 +188,7 @@ async function verify(token) {
         //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
     }); 
     const payload = ticket.getPayload();
-  
+   
     newUser.id = ticket.getUserId();
      newUser.email=payload["email"];    
      newUser.username=payload["name"];
@@ -171,46 +197,49 @@ async function verify(token) {
     // const domain = payload['hd'];
   }
 
-app.post("/login",async (req,res) => {
-    var token =req.body.idToken; 
-     //console.log(token);
+  app.post('/login',async (req,res)=>{
+    var token =req.body.idToken
+     console.log(token)
     
         try {
-            await verify(token);
-            console.log(newUser.id);
-            console.log(newUser.email);
-            console.log(newUser.username);
+            await verify(token)
+            console.log(newUser.id)
+            console.log(newUser.email)
+            console.log(newUser.username)
             res.status(200).send({
-                method:"Post",
+                method:'Post',
                 idToken:token,
                 userid:newUser.id,
                 name:newUser.username,
                 email:newUser.email
                
-               }); 
+               })
                
         } catch (error) {
             res.status(401).send({
                 error:error.message
-               });
+               })
         }
         
       
-    try {
+     try{
         const result=await db.collection("users").findOne({"id":newUser.id});
-        if(result==null){ 
-        db.collection("users").insertOne(newUser);
-        }
+       if(result==null){ 
+      db.collection("users").insertOne(newUser);
+       }
     }
     catch(err){
         res.status(404).send({
             err:err.message,
-            message:"User did not insert successfully"
-        }); 
+            message:'User did not insert successfully'
+        })
     }
     
-}); 
-
+           })
+        
+        
+        
+    
 
    app.post("/firebase/notification", (req, res ) => {
     const  registrationToken = req.body.registrationToken;  
@@ -236,10 +265,12 @@ app.post("/home/create_goal/:userid", async (req, res) => {
     //temporary postid is a concat of userid, date posted, and title of post. 
     var id = `${req.params.userid}${req.body.title}`;
     var userid = req.params.userid; 
-    let checkuser = await db.collection("users").findOne({"id" : userid}); 
-    if(checkuser === null) {
-        res.status(404).end(); 
-    }
+    const result=await db.collection("users").findOne({"id":userid});
+    if(result==null){
+        res.status(404).send("User Not found");
+    }  
+    else{
+    
     //fill in goal fields.
     var title = req.body.title; 
     var author = req.body.author; 
@@ -254,7 +285,7 @@ app.post("/home/create_goal/:userid", async (req, res) => {
     var needupdate = 0; 
 
     if(!title || !author || !content || !tag) {
-        res.status(400).end(); 
+        res.status(400).send("request incomplete"); 
         return;
     }
 
@@ -280,22 +311,27 @@ app.post("/home/create_goal/:userid", async (req, res) => {
         }
     });
 
-    res.status(200).send("goal created"); 
+   
+    
+    
+  
+    res.status(200).send("goal created");
+}
+
 });
 
-app.put("/home/comment/:userid", async (req, res) => {
+app.put("/home/comment/:userid",async (req, res) => {
 
     var comment = `${req.body.author} : ${req.body.comment}`;
     var id = req.body.id; 
     var userid = req.params.userid; 
     var now = new Date(Date.now()); 
     var date = `${now.getMonth()} ${now.getDay()}, ${now.getFullYear()}`;
-
-    let checkuser = await db.collection("users").findOne({"id" : userid}); 
-    if(checkuser === null) {
-        res.status(404).end(); 
+    const result=await db.collection("users").findOne({"id":userid});
+    if(result==null){
+        res.status(404).send("User Not found");
     }
-
+    else{
     db.collection("goals").updateOne({id}, {$push: {
         "comments": comment
     },
@@ -310,20 +346,24 @@ app.put("/home/comment/:userid", async (req, res) => {
         }
     });
 
+  
+  
+    
+
     res.send("comment inserted"); 
+}
 });
 
-app.put("/home/like/:userid", async (req, res) => { 
+app.put("/home/like/:userid",async (req, res) => {
     var id = req.body.id; 
     var userid = req.params.userid; 
     var now = new Date(Date.now()); 
     var date = `${now.getMonth()} ${now.getDay()}, ${now.getFullYear()}`;
-
-    let checkuser = await db.collection("users").findOne({"id" : userid}); 
-    if(checkuser === null) {
-        res.status(404).end(); 
+    const result=await db.collection("users").findOne({"id":userid});
+    if(result==null){
+        res.status(404).send("User Not found");
     }
-
+    else{
     db.collection("goals").updateOne({id}, {$inc: {
         "likes" : 1
     },
@@ -338,7 +378,10 @@ app.put("/home/like/:userid", async (req, res) => {
         }
     });
 
-    res.send("like recorded");  
+    
+    
+        res.send("like recorded"); 
+}
 });
 
 // app.put("/home/update_goal/updateone", async (req, res) => {

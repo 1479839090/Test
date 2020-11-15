@@ -110,8 +110,7 @@ describe('insert', () => {
   });
 
   afterEach(async () => {
-    await connection.close();
-    await db.close();
+    await db.collection("dbtest").deleteMany({});
   });
 
   it('should insert a doc into collection', async () => {
@@ -141,8 +140,7 @@ describe('testing feed manager mock', function () {
   });
 
   afterEach(async () => {
-    await connection.close();
-    await db.close();
+    await db.collection("dbtest").deleteMany({});
   });
 
   it('should insert a doc into collection', async () => {

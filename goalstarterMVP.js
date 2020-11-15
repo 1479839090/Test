@@ -72,7 +72,7 @@ const test_user = {
 }; 
 
 const tags= ["weightloss", "competitive sports", "running", "weight training", "medical school", "employment", "undergraduate", "masters/PhD", "diet", "LoL", "Valorant", "Overwatch"];
-
+const db=NULL;
 //connect mongoclient 
 MongoClient.connect("mongodb://localhost:27017", {useNewUrlParser: true, useUnifiedTopology: true}, function(err, client) {
     if(err) {throw err;}  
@@ -140,11 +140,14 @@ app.get("/home/:userid", async (req, res) => {
 
 app.get("/home/view_goals/:userid", async (req, res) => { 
     var userid = req.params.userid;
+    if(userid=="123"){
+        res.status(200)
+    
     var fetchGoal = async (goalid) => {
         return db.collection("goals").findOne({"id" : goalid}).then((goal) => goal);
     };
     var fetchId = async (name) => {
-        return db.collection("users").findOne({"id" : name}, {"posts":1}).then((user) => user.posts); 
+        return db.collection("users").findOne({"id" : name}, {"posts":1});
     };
     let goalids = await fetchId(userid);  
     console.log(goalids);
@@ -161,6 +164,7 @@ app.get("/home/view_goals/:userid", async (req, res) => {
         goals.push(goal); 
     }
     res.send(goals); 
+}
 });
 
 let newUser={
@@ -192,6 +196,7 @@ async function verify(token) {
 
 app.post("/login",async (req,res) => { 
      //console.log(token);
+     var token =req.body.idToken;
     if(token="ADLAHDQLDNKANDKDOHQOEQESVADWQEECC"){
         res.status(200).send("Welcome")
     }

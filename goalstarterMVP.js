@@ -6,7 +6,6 @@ var {notificationOptions}=require("./push");
 const bodyParser=require("body-parser");
 const cors=require("cors");
 var app = express();
-var db=require("./goalstarterMVP.test");
 app.use(express.json()); 
 app.use(cors());
 app.use(bodyParser.urlencoded({extended:false}));
@@ -74,28 +73,28 @@ const test_user = {
 
 const tags= ["weightloss", "competitive sports", "running", "weight training", "medical school", "employment", "undergraduate", "masters/PhD", "diet", "LoL", "Valorant", "Overwatch"];
 
-// //connect mongoclient 
-// MongoClient.connect("mongodb://localhost:27017", {useNewUrlParser: true, useUnifiedTopology: true}, function(err, client) {
-//     if(err) {throw err;}  
-//     //create a database
-//     db = client.db("dbtest"); 
-//     console.log("starting"); 
+//connect mongoclient 
+ MongoClient.connect("mongodb://localhost:27017", {useNewUrlParser: true, useUnifiedTopology: true}, async function(err, client) {
+    if(err) {throw err;}  
+    //create a database
+    db = await client.db("dbtest"); 
+    console.log("starting"); 
 
-//     //create a collectiion for storing goals
-//     db.createCollection("goals", function(err, res) {
-//         if(err) {throw err;}  
-//     });
-//         //create a collection for storing users. 
-//     db.createCollection("users", function(err, res) {
-//         if(err) {throw err;}  
-//     });
+    //create a collectiion for storing goals
+    await db.createCollection("goals", function(err, res) {
+        if(err) {throw err;}  
+    });
+        //create a collection for storing users. 
+    await db.createCollection("users", function(err, res) {
+        if(err) {throw err;}  
+    });
 
-//     for(var i = 0; i < 3; i++) { 
-//         db.collection("goals").insertOne(init[i]); 
-//     }
+    for(var i = 0; i < 3; i++) { 
+      await  db.collection("goals").insertOne(init[i]); 
+    }
 
-//     db.collection("users").insertOne(test_user); 
-// });  
+    await db.collection("users").insertOne(test_user); 
+});  
 
 app.get("/home/:userid", async (req, res) => {
     var userid = req.params.userid; 

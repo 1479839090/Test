@@ -97,11 +97,11 @@ const test_user = {
   "comments":[],
   "likes":[]
 }; 
-let db;
+
 describe('insert', () => {
   let connection;
 
-
+  let db;
   beforeAll(async () => {
     connection = await MongoClient.connect("mongodb://localhost:27017", {
       useNewUrlParser: true,
@@ -130,6 +130,29 @@ describe('insert', () => {
 
 
 describe('testing feed manager mock', function () {
+  let connection;
+
+  let db;
+  beforeAll(async () => {
+    connection = await MongoClient.connect("mongodb://localhost:27017", {
+      useNewUrlParser: true,
+    });
+    db = await connection.db("dbtest");
+  });
+
+  afterAll(async () => {
+    await connection.close();
+    await db.close();
+  });
+
+  it('should insert a doc into collection', async () => {
+    const users = db.collection('users');
+    const goals=db.collection('goals');
+   
+    await users.insertOne(test_user);
+    for(var i = 0; i < 3; i++) { 
+      await goals.insertOne(init[i]); 
+  }
   it('responds to GET /home/123', async (done) => {
   const response = await request.get('/home/123'); 
 
@@ -253,4 +276,3 @@ describe('testing PUT on like with wrong userid',function(){
   })
 })
 
-module.exports={db};

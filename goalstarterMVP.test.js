@@ -91,7 +91,6 @@ describe('testing feed manager mock', function () {
   const response = await request.get('/home/123'); 
 
   expect(response.status).toBe(200); 
-  expect(response.body).toStrictEqual(list); 
   done();
 });
 }); 

@@ -71,6 +71,16 @@ const test_user = {
     "likes":[]
 }; 
 
+const test_user2 = {
+    "id":"222",
+    "username":"Eric Lyu",
+    "email":"de1soc@gmail.com",
+    "friendslist":[],
+    "posts":["test1"],
+    "comments":[],
+    "likes":[]
+}; 
+
 const tags= ["weightloss", "competitive sports", "running", "weight training", "medical school", "employment", "undergraduate", "masters/PhD", "diet", "LoL", "Valorant", "Overwatch"];
 
 //connect mongoclient 
@@ -94,6 +104,7 @@ const tags= ["weightloss", "competitive sports", "running", "weight training", "
     }
 
     await db.collection("users").insertOne(test_user); 
+    await db.collection("users").insertOne(test_user2);
 });  
 
 app.get("/home/:userid", async (req, res) => {

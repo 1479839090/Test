@@ -85,7 +85,7 @@ describe('insert', () => {
 });
 
 
-describe('testing feed manager mock', function () {
+describe('user with no posts', function () {
  
   it('responds to GET /home/123', async (done) => {
   const response = await request.get('/home/123'); 
@@ -96,7 +96,16 @@ describe('testing feed manager mock', function () {
 });
 }); 
 
+describe('user with posts', function () {
+ 
+  it('responds to GET /home/222', async (done) => {
+  const response = await request.get('/home/222'); 
 
+  expect(response.status).toBe(200); 
+
+  done();
+});
+}); 
 
 describe('testing create_goal with correct body',function(){
   it('responds to POST /home/create_goal/123',async(done)=>{
@@ -209,4 +218,5 @@ describe('testing PUT on like with wrong userid',function(){
       done();   
   })
 })
+
 

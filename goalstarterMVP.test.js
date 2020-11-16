@@ -75,7 +75,6 @@ describe('insert', () => {
   afterEach(async () => {
     await db.collection("dbtest").deleteMany({});
     await collection.close();
-    await db.close();
   });
 
   it('should insert a doc into collection', async () => {

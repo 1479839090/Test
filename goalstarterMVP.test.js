@@ -72,8 +72,10 @@ describe('insert', () => {
     db = await connection.db("dbtest");
   });
 
-  beforeEach(async () => {
+  afterEach(async () => {
     await db.collection("dbtest").deleteMany({});
+    await collection.close();
+    await db.close();
   });
 
   it('should insert a doc into collection', async () => {
@@ -91,13 +93,14 @@ describe('testing feed manager mock', function () {
   const response = await request.get('/home/123'); 
 
   expect(response.status).toBe(200); 
+
   done();
 });
 }); 
 
 
 
-describe('testing fetching user information with correct body',function(){
+describe('testing create_goal with correct body',function(){
   it('responds to POST /home/create_goal/123',async(done)=>{
     const body={ 
       title: "Application to Math 302", 
@@ -112,7 +115,7 @@ describe('testing fetching user information with correct body',function(){
   })
 })
 
-describe('testing fetching user information with body with NUll value ',function(){
+describe('testing create goal with NUll value ',function(){
   it('responds to POST /home/create_goal/123',async(done)=>{
     const body={
       title: null, 
@@ -127,7 +130,7 @@ describe('testing fetching user information with body with NUll value ',function
   })
 })
 
-describe('testing fetching user information with body with wrong userid',function(){
+describe('testing create goal with wrong userid',function(){
   it('responds to POST /home/create_goal/321',async(done)=>{
     const body={
       title: "abc", 

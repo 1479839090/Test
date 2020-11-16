@@ -121,11 +121,6 @@ app.get("/home/:userid", async (req, res) => {
     let user = await fetchUser(userid); 
     console.log(user); 
     let friends = user.friendslist; 
-    for(var i = 0; i < friends.length && feed.length < limit; i++) {
-        let friend = await fetchUser(friends[i]);  
-        var post = friend.posts[friend.posts.length - 1]; 
-        feed.push(post); 
-    }
 
     if(user.posts.length > 0 && feed.length < limit) {
         let id = user.posts[user.posts.length - 1]; 
@@ -208,9 +203,6 @@ async function verify(token) {
     
         try {
             await verify(token)
-            console.log(newUser.id)
-            console.log(newUser.email)
-            console.log(newUser.username)
             res.status(200).send({
                 method:'Post',
                 idToken:token,
@@ -242,26 +234,6 @@ async function verify(token) {
     
            })
         
-        
-        
-    
-
-   app.post("/firebase/notification", (req, res ) => {
-    const  registrationToken = req.body.registrationToken;  
-    const message = req.body.message;
-    const options =  notificationOptions;
-    
-      admin.messaging().sendToDevice(registrationToken, message, options)
-      .then( (response) => {
-
-       res.status(200).send("Notification sent successfully"); 
-       
-      })
-      .catch((error) => {
-          //console.log(error);
-      });
-
-});
 
 app.post("/home/create_goal/:userid", async (req, res) => {
     //generate date string 

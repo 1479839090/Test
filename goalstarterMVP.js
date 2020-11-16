@@ -121,8 +121,8 @@ app.get("/home/:userid", async (req, res) => {
     var fetchGoal = async (goal) => {
         return  db.collection("goals").findOne({"id" : goal}).then((goal) => goal); 
     };
-    var fetchGoalbyTag = async (goal_tag, limit) => {
-        return  db.collection("goals").findOne({"tag" : goal_tag}).limit(limit).toArray(); 
+    var fetchGoalbyTag = async (goal_tag) => {
+        return  db.collection("goals").findOne({"tag" : goal_tag})
     };
     var feed = []; 
     var limit = 10; 
@@ -137,7 +137,7 @@ app.get("/home/:userid", async (req, res) => {
         let id = user.posts[user.posts.length - 1]; 
         let post = await fetchGoal(id); 
         let tag = post.tag; 
-        let posts = fetchGoalbyTag(tag, limit - feed.length); 
+        let posts = fetchGoalbyTag(tag); 
         feed.concat(posts);
     }   
 

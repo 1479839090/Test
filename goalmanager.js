@@ -1,6 +1,6 @@
 
 async function create(userid, title, author, content, milestones, schedule, tag) {
-    var MongoClient = require("mongodb").MongoClient;
+    var MongoClient = require('mongodb').MongoClient;
     var url = "mongodb://localhost:27017";
     
     const months = ["January", "February", "March", "April", "May", "June",
@@ -71,7 +71,7 @@ async function viewAll(userid) {
 async function viewFeed(userid, limit) {
     var MongoClient = require('mongodb').MongoClient;
     var url = "mongodb://localhost:27017";
-    var feed = []; 
+    feed = []; 
  
     const client = await MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true});
     const db = client.db("GoalStarter"); 
@@ -90,11 +90,11 @@ async function viewFeed(userid, limit) {
     //analyze user preferences by tags. 
     var preferences = []; 
     var mode = {}; 
+
     let posts = user.posts; 
     for(var i = 1; i < posts.length; i++) {
         let post = await db.collection("goals").findOne({"id" : posts[i]}); 
         let tag = post.tag; 
-   
         preferences = preferences.concat(tag);
     } 
 
@@ -102,7 +102,6 @@ async function viewFeed(userid, limit) {
     for(var i = 1; i < likes.length; i++) {
         let post = await db.collection("goals").findOne({"id" : likes[i]}); 
         let tag = post.tag; 
-     
         preferences = preferences.concat(tag);
     }
 
@@ -110,7 +109,6 @@ async function viewFeed(userid, limit) {
     for(var i = 1; i < comments.length; i++) {
         let post = await db.collection("goals").findOne({"id" : comments[i]}); 
         let tag = post.tag; 
-       
         preferences = preferences.concat(tag);
     }
     
@@ -132,11 +130,9 @@ async function viewFeed(userid, limit) {
                 maxCount = mode[tag];
             }
         }
-       
-        let recommended = await db.collection("goals").find({"tag" : maxTag}).limit(limit-feed.length).toArray(); 
-       
-      Array.prototype.push.apply(feed,recommended);
-    
+        
+        let recommended = await db.collection("goals").find({"tag" : maxTag}).limit(limit - feed.length).toArray(); 
+        feed = feed.concat(recommended); 
     }
     client.close(); 
     return feed; 
@@ -214,7 +210,7 @@ async function update(goalid, index) {
     const db = client.db("GoalStarter");
 
     if(index > 3 || index < 0) {
-        return 1;
+        return 1
     }
 
     await db.collection("goals").updateOne({"id" : goalid}, {$set: {
@@ -233,4 +229,4 @@ module.exports = {
     viewAll : viewAll, 
     viewFeed : viewFeed, 
     update : update 
-};
+}

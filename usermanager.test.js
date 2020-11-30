@@ -1,7 +1,40 @@
 
 const usermanager = require("./usermanager"); 
-var MongoClient = require("mongodb").MongoClient;
+var MongoClient = require('mongodb').MongoClient;
 
+describe("user login", () => {
+    let client; 
+    let db;
+
+    beforeAll(async() => {
+        var url = "mongodb://localhost:27017";
+        client = await MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true});
+        db = await client.db("GoalStarter"); 
+
+        await db.createCollection("users", function(err, res) {
+            if(err) {throw err;}  
+        });
+        await db.createCollection("goals", function(err, res) {
+            if(err) {throw err;}  
+        });
+        await client.close();
+    });
+
+    afterAll(async () => { 
+        var url = "mongodb://localhost:27017";
+        client = await MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true});
+        db = await client.db("GoalStarter"); 
+        await db.dropDatabase();
+        client.close();
+    });
+
+    it("test login", async() => {
+        var token = "eyJhbGciOiJSUzI1NiIsImtpZCI6ImRlZGMwMTJkMDdmNTJhZWRmZDVmOTc3ODRlMWJjYmUyM2MxOTcyNGQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI1MzQ4OTU1MzgxNTctc3UxMG80a2gyZ2N0OWVsZ2FhZmpnOW1uOTVmNWhsbW4uYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI1MzQ4OTU1MzgxNTctMTdvMjJyM3RxN2ZuNmc2cG5ob2UwcnBsNHFza3E1bmcuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTQ5NjI1NTQ3NDQ5MDcyNjk3MTEiLCJlbWFpbCI6ImFsYW4uc2h1eWFvd2VuQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJuYW1lIjoiU2h1eWFvIHdlbiIsInBpY3R1cmUiOiJodHRwczovL2xoNC5nb29nbGV1c2VyY29udGVudC5jb20vLW1IVHhRU0M3TkpzL0FBQUFBQUFBQUFJL0FBQUFBQUFBQUFBL0FNWnV1Y2xGQ0xLRDFTQXdwX25KTHM2MTBaY3BHemhGWWcvczk2LWMvcGhvdG8uanBnIiwiZ2l2ZW5fbmFtZSI6IlNodXlhbyIsImZhbWlseV9uYW1lIjoid2VuIiwibG9jYWxlIjoiZW4tR0IiLCJpYXQiOjE2MDYyNTk4NTMsImV4cCI6MTYwNjI2MzQ1M30.YRYRA9gJzadock4GPsdC3UXD_nA7MYTCrMJfRr08D-bVM3P82Ow4hyk-b2A-jUiMuWcH-lKrh9ZWwE2s7INwDewEiNuS7sWLnXyKxemXIYjNH3ouFMb4c2VOPk3IufpYpVq3RpB7sHMYO6bmuvTdepkEeYREPtMLtwF7awiIkwkziJu26UjRSNSnSBJajOoxW4ob757MOoGyzv1Kg_fbV-KfsOGZ62bm2j7TiFalz98ajPdMNAoT7l3e4Ku5nvOly75b7S6pJCpgxeE-aFD6odTYeSfnYAOk2XbJlNSBmmPsVQNYRqMAOOaZo5UQC-ox0epmZAX7dIJDUgNurLZmKQ"; 
+        let err = await usermanager.login(token); 
+        expect(err).toBe(1); 
+    });
+
+});
 
 describe("send friend request", () => {
     let client; 
@@ -11,8 +44,7 @@ describe("send friend request", () => {
         var url = "mongodb://localhost:27017";
         client = await MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true});
         db = await client.db("GoalStarter"); 
-        db.dropDatabase();
-        db = await client.db("GoalStarter"); 
+
         await db.createCollection("users", function(err, res) {
             if(err) {throw err;}  
         });

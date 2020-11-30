@@ -40,9 +40,7 @@ describe("view goals", () => {
         await db.dropDatabase();
         db = client.db("GoalStarter"); 
 
-        await db.createCollection("users", function(err, res) {
-            if(err) {throw err;}  
-        });
+       
         
 
         await db.collection("users").insertOne(user); 

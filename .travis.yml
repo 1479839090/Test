@@ -14,5 +14,5 @@ install:
 - npm install
 
 script:
-- npm test
+- npm test main.test.js
 

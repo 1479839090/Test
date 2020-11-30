@@ -20,22 +20,14 @@ app.use(bodyParser.json());
 
 var url = "mongodb://localhost:27017";
 
-MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true}, async function(err, client) {
 
-    
-    console.log("Database created! 2");
-    const db = client.db("GoalStarter"); 
-    db.createCollection("users", function(err, res) {
-        
-    });
-    db.createCollection("goals", function(err, res) {
-        
-    });
+const client = MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true}); 
+const db = client.db("GoalStarter"); 
 
-    
-    client.close(); 
-});
+db.createCollection("users", function(err, res){});
+db.createCollection("goals", function(err, res) {});
 
+client.close(); 
 
 app.get("/home/:userid", async (req, res) => {
    var userid = req.params.userid; 
@@ -102,7 +94,7 @@ app.post("/login", async (req,res) => {
         userid:newUser.id,
         name:newUser.username,
         email:newUser.email
-    })
+    }); 
 }); 
 
 app.post("/home/create_goal/:userid", async (req, res) => {
@@ -114,11 +106,6 @@ app.post("/home/create_goal/:userid", async (req, res) => {
     var milestones = req.body.milestones; 
     var schedule = req.body.schedule; 
     var tag = req.body.tag; 
-
-    if(!title || !author || !content || !tag) {
-        res.status(400).end(); 
-        return;
-    }
 
     await goalmanager.create(userid, title, author, content, milestones, schedule, tag); 
 

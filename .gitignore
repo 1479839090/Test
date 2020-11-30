@@ -4,3 +4,4 @@ node_modules/.bin/mime
 node_modules/.bin/compileProtos
 *.ps1
 node_modules
+*.html

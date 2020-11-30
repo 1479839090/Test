@@ -1,5 +1,5 @@
 const goalmanager = require("./goalmanager");
-var MongoClient = require('mongodb').MongoClient;
+var MongoClient = require("mongodb").MongoClient;
 
 describe("create goal test", () => {
     let client; 
@@ -39,7 +39,7 @@ describe("create goal test", () => {
         var title = "testGoal";
         var author = "John";
         var content = "Just a test";
-        var tag = 'test'; 
+        var tag = "test"; 
 
         let result = await goalmanager.create(userid, title, author, content, milestones, schedule, tag); 
         expect(result).toBe(0); 
@@ -65,12 +65,12 @@ describe("update like and comment test", () => {
     it("update testGoal index", async() => {
         let result = await goalmanager.update("testUsertestGoal", 1); 
         expect(result).toBe(0); 
-    })
+    });
 
     it("update testGoal invalid index", async() => {
         let result = await goalmanager.update("testUsertestGoal", 6); 
         expect(result).toBe(1); 
-    })
+    });
 
     it("like testGoal as testUser", async() => {
         let result = await goalmanager.like("testUser", "testUsertestGoal"); 

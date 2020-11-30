@@ -10,7 +10,7 @@ async function getFriends(userid) {
     let friendsId = user.friendslist; 
 
     for(var i = 1; i < friendsId.length; i++) {
-        let friend = await db.collection("users").findOne({"id" : friendsId[i]});
+        let friend = await db.collection("users").findOne({"id" : `${friendsId[i]}`});
         let name = friend.username; 
         friends.push(name); 
     }
@@ -21,7 +21,7 @@ async function getFriends(userid) {
 }
 
 async function getRequest(userid) { 
-    var MongoClient = require('mongodb').MongoClient;
+    var MongoClient = require("mongodb").MongoClient;
     var url = "mongodb://localhost:27017";
     const client = await MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true});
     const db = client.db("GoalStarter");
@@ -36,7 +36,7 @@ async function getRequest(userid) {
 }
 
 async function confirmRequest(userid, senderEmail) {
-    var MongoClient = require('mongodb').MongoClient;
+    var MongoClient = require("mongodb").MongoClient;
     var url = "mongodb://localhost:27017";
     const client = await MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true});
     const db = client.db("GoalStarter");
@@ -49,7 +49,7 @@ async function confirmRequest(userid, senderEmail) {
     let requests = user.pendingfriends; 
     
     for(var i = 1; i < requests.length; i++) {
-        if(requests[i] == senderEmail) {
+        if(`${requests[i]}` === senderEmail) {
             
             await db.collection("users").updateOne({"id" : userid}, {$pull: {
                 "pendingfriends": senderEmail
@@ -72,7 +72,7 @@ async function confirmRequest(userid, senderEmail) {
 
 async function sendRequest(senderEmail, recieverEmail) {
 
-    var MongoClient = require('mongodb').MongoClient;
+    var MongoClient = require("mongodb").MongoClient;
     var url = "mongodb://localhost:27017";
     const client = await MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true});
     const db = client.db("GoalStarter"); 
@@ -90,7 +90,7 @@ async function sendRequest(senderEmail, recieverEmail) {
 
 async function firebase(userid, token) {
 
-    var MongoClient = require('mongodb').MongoClient;
+    var MongoClient = require("mongodb").MongoClient;
     var url = "mongodb://localhost:27017";
     const client = await MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true});
     const db = client.db("GoalStarter");
@@ -104,7 +104,7 @@ async function firebase(userid, token) {
 }
 
 async function denyRequest(userid, senderEmail) {
-    var MongoClient = require('mongodb').MongoClient;
+    var MongoClient = require("mongodb").MongoClient;
     var url = "mongodb://localhost:27017";
     const client = await MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true});
     const db = client.db("GoalStarter");
@@ -118,7 +118,7 @@ async function denyRequest(userid, senderEmail) {
  
     for(var i = 1; i < requests.length; i++) {
        
-        if(requests[i] == senderEmail) {
+        if(`${requests[i]}` === senderEmail) {
            
             await db.collection("users").updateOne({"id" : userid}, {$pull: {
                 "pendingfriends": senderEmail
@@ -131,11 +131,11 @@ async function denyRequest(userid, senderEmail) {
 }
 
 module.exports = {
-    getRequest : getRequest,
-    confirmRequest : confirmRequest, 
-    denyRequest : denyRequest, 
-    sendRequest : sendRequest, 
-    getFriends : getFriends,
-    firebase : firebase
+    getRequest,
+    confirmRequest, 
+    denyRequest, 
+    sendRequest, 
+    getFriends,
+    firebase
 };
 

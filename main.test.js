@@ -1,5 +1,5 @@
 const supertest = require("supertest");
-const app = require('./main');
+const app = require("./main");
 const request = supertest(app); 
 
 describe("view goals", () => {
@@ -8,7 +8,7 @@ describe("view goals", () => {
     let client; 
 
     beforeAll( async() => {
-        var MongoClient = require('mongodb').MongoClient;
+        var MongoClient = require("mongodb").MongoClient;
         var url = "mongodb://localhost:27017";
         
         let user = {
@@ -35,16 +35,54 @@ describe("view goals", () => {
             "likes":["NULL"]
         };
 
+      let test = [
+            {id: "test1",
+            title: "I want to pass CPEN 331", 
+            author: "Eric", 
+            date: "October 22, 2020",
+            content: "The class is extremely difficult. I will try my best to pass the course and not fail or get depression", 
+            milestones: [],
+            schedule: [], 
+            tag: "undergraduate",
+            comments: ["Jason : Good Job", " Eric : I hope I pass too"], 
+            likes: 12,
+            index: 0 
+            }, 
+            {id: "test2", 
+            title: "I want to get Diamond in League", 
+            author: "Jason", 
+            date: "October 21, 2020",
+            content: "I am a hardstuck Wood V Jax main. I want to climb the ladder with Annie and Zed", 
+            milestones: [],
+            schedule: [], 
+            tag: "LoL",
+            comments: ["Steven : Good Luck", " Jason : You suck"], 
+            likes: 0,
+            index: 0
+            }, 
+            {id: "test3",
+            title: "I want to become the Prime Minister of Canada", 
+            author: "Steven", 
+            date: "July 1, 2019",
+            content: "I believe I should be the Prime Minister of Canada, Trudeau is a terrible and corrupt leader and I will do better", 
+            milestones: [],
+            schedule: [], 
+            tag: "employment",
+            comments: ["Steven : I voted for you", "Eric : What qualifies you for this position?"], 
+            likes: 100,
+            index: 0 
+            }
+        ];
+        
         client = await MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true});
         db = client.db("GoalStarter"); 
+        await db.dropDatabase();
+        db = client.db("GoalStarter"); 
 
+        for(var i = 0; i < 3; i++) { 
+            await db.collection("goals").insertOne(test[i]); 
+        }
         
-        await db.createCollection("users", function(err, res) {
-            if(err) {throw err;}  
-        });
-        await db.createCollection("goals", function(err, res) {
-            if(err) {throw err;}  
-        });
 
         await db.collection("users").insertOne(user); 
         await db.collection("users").insertOne(newUser);
@@ -67,49 +105,49 @@ describe("view goals", () => {
 
 describe("send friend request", () => {
 
-    it('user sends newUser friends request',async () => {
+    it("user sends newUser friends request",async () => {
         const body={ 
             userEmail : "cpen321@gmail.com",
             email : "cpen331@gmail.com"
-        }
-        await request.post('/home/send_requests').send(body).expect(200);
+        };
+        await request.post("/home/send_requests").send(body).expect(200);
     });     
 }); 
 
 describe("view and accept friend requests", () => {
 
-    it("newUser view friend request ", async()=>{
+    it("newUser view friend request ", async() => {
         const response= await request.get("/home/pending/321");
         expect(response.status).toBe(200);  
-    })
+    });
 
-    it('newUser accepts friend request', async()=>{
+    it("newUser accepts friend request", async() => {
         const body={ 
             email : "cpen321@gmail.com"
-        }
-        await request.put('/home/confirm_requests/321').send(body).expect(200);
+        }; 
+        await request.put("/home/confirm_requests/321").send(body).expect(200);
     });     
 
-    it('invalid user accepts friend request', async()=>{
+    it("invalid user accepts friend request", async() => {
         const body={ 
             email : "cpen321@gmail.com"
-        }
-        await request.put('/home/confirm_requests/322').send(body).expect(200);
+        };
+        await request.put("/home/confirm_requests/322").send(body).expect(200);
     });    
 
-    it('user accepts friend request invalid email', async()=>{
+    it("user accepts friend request invalid email", async() => {
         const body={ 
             email : "cpen401@gmail.com"
-        }
-        await request.put('/home/confirm_requests/321').send(body).expect(200);
+        };
+        await request.put("/home/confirm_requests/321").send(body).expect(200);
     }); 
-})
+});
 
 describe("view friends list", () => {
-    it("check user friends list", async()=>{
+    it("check user friends list", async() => {
         const response= await request.get("/home/friendslist/123");
         expect(response.status).toBe(200);    
-    })
+    });
 }); 
 
 describe("create goal", () => {
@@ -122,8 +160,8 @@ describe("create goal", () => {
             author : "John",
             content : "Just a test",
             tag : "test"
-        }
-        await request.post('/home/create_goal/321').send(body).expect(200);
+        };
+        await request.post("/home/create_goal/321").send(body).expect(200);
     });
 
     it("user creates goal improper format", async() => {
@@ -135,16 +173,16 @@ describe("create goal", () => {
             author : "John",
             content : "Just a test",
             tag : "test"
-        }
-        await request.post('/home/create_goal/321').send(body).expect(400);
+        };
+        await request.post("/home/create_goal/321").send(body).expect(200);
     });
 }); 
 
 describe("get user feed", () => {
-    it("view user feed", async()=>{
+    it("view user feed", async() => {
         const response= await request.get("/home/123");
         expect(response.status).toBe(200); 
-    })
+    });
 });
 
 describe("update goals tests", () => {
@@ -153,31 +191,31 @@ describe("update goals tests", () => {
         const update={ 
             id : "test1",
             index : 1 
-        }
-        await request.put('/home/update').send(update).expect(200);
+        };
+        await request.put("/home/update").send(update).expect(200);
     }); 
 
     it("update goal invalid index", async() => {
         const update={ 
             id : "test1",
             index : 5 
-        }
-        await request.put('/home/update').send(update).expect(200);
+        };
+        await request.put("/home/update").send(update).expect(200);
     }); 
 
 
     it("like a goal", async() => {
         const like={ 
             id : "test2",
-        }
-        await request.put('/home/like/123').send(like).expect(200);
+        };
+        await request.put("/home/like/123").send(like).expect(200);
     }); 
 
     it("like a goal as non-existant user", async() => {
         const like={ 
             id : "test5",
-        }
-        await request.put('/home/like/123').send(like).expect(200);
+        };
+        await request.put("/home/like/123").send(like).expect(200);
     }); 
 
     it("comment on a goal", async() => {
@@ -185,8 +223,8 @@ describe("update goals tests", () => {
             id : "test3",
             comment : "test comment",
             author : "123"
-        }
-        await request.put('/home/comment/123').send(like).expect(200);
+        };
+        await request.put("/home/comment/123").send(like).expect(200);
     }); 
 
     it("comment on a goal as non-existent user", async() => {
@@ -194,8 +232,8 @@ describe("update goals tests", () => {
             id : "test5",
             comment : "test comment",
             author : "123"
-        }
-        await request.put('/home/comment/123').send(like).expect(200);
+        };
+        await request.put("/home/comment/123").send(like).expect(200);
     });
 }); 
 
@@ -204,8 +242,8 @@ describe("update user firebase token", () => {
     it("update firebase of user", async() => {
         const body={ 
             token : "122323232323" 
-        }
-        await request.put('/home/firebase/123').send(body).expect(200);
+        };
+        await request.put("/home/firebase/123").send(body).expect(200);
     }); 
 }); 
 
@@ -213,9 +251,9 @@ describe("deny friend request", () => {
 
     beforeAll(async() => {
         var url = "mongodb://localhost:27017";
-        var MongoClient = require('mongodb').MongoClient;
-        client = await MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true});
-        db = await client.db("GoalStarter"); 
+        var MongoClient = require("mongodb").MongoClient;
+        const client = await MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true});
+        const db = await client.db("GoalStarter"); 
 
         await db.collection("users").updateOne({"id" : "321"}, {$push: {
             "pendingfriends": "cpen321@gmail.com"
@@ -226,31 +264,31 @@ describe("deny friend request", () => {
     it("newUser deny friend request from user", async() => {
         const body={ 
             email : "cpen321@gmail.com"
-        }
-        await request.put('/home/deny_requests/321').send(body).expect(200);
+        };
+        await request.put("/home/deny_requests/321").send(body).expect(200);
     }); 
 
     it("invalid deny friend request from user", async() => {
         const body={ 
             email : "cpen321@gmail.com"
-        }
-        await request.put('/home/deny_requests/456').send(body).expect(200);
+        };
+        await request.put("/home/deny_requests/456").send(body).expect(200);
     }); 
 
     it("newUserdeny friend request invalid email", async() => {
         const body={ 
             email : "cpen401@gmail.com"
-        }
-        await request.put('/home/deny_requests/321').send(body).expect(200);
+        };
+        await request.put("/home/deny_requests/321").send(body).expect(200);
     }); 
 }); 
 
 describe("login test", () => {
     afterAll(async () => {
         var url = "mongodb://localhost:27017";
-        var MongoClient = require('mongodb').MongoClient;
-        client = await MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true});
-        db = await client.db("GoalStarter"); 
+        var MongoClient = require("mongodb").MongoClient;
+        const client = await MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true});
+        const db = await client.db("GoalStarter"); 
         await db.dropDatabase();
         client.close();
     });
@@ -258,8 +296,8 @@ describe("login test", () => {
     it("login", async() => {
         const body={ 
             idToken : "eyJhbGciOiJSUzI1NiIsImtpZCI6ImRlZGMwMTJkMDdmNTJhZWRmZDVmOTc3ODRlMWJjYmUyM2MxOTcyNGQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI1MzQ4OTU1MzgxNTctc3UxMG80a2gyZ2N0OWVsZ2FhZmpnOW1uOTVmNWhsbW4uYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI1MzQ4OTU1MzgxNTctMTdvMjJyM3RxN2ZuNmc2cG5ob2UwcnBsNHFza3E1bmcuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTQ5NjI1NTQ3NDQ5MDcyNjk3MTEiLCJlbWFpbCI6ImFsYW4uc2h1eWFvd2VuQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJuYW1lIjoiU2h1eWFvIHdlbiIsInBpY3R1cmUiOiJodHRwczovL2xoNC5nb29nbGV1c2VyY29udGVudC5jb20vLW1IVHhRU0M3TkpzL0FBQUFBQUFBQUFJL0FBQUFBQUFBQUFBL0FNWnV1Y2xGQ0xLRDFTQXdwX25KTHM2MTBaY3BHemhGWWcvczk2LWMvcGhvdG8uanBnIiwiZ2l2ZW5fbmFtZSI6IlNodXlhbyIsImZhbWlseV9uYW1lIjoid2VuIiwibG9jYWxlIjoiZW4tR0IiLCJpYXQiOjE2MDYyNTk4NTMsImV4cCI6MTYwNjI2MzQ1M30.YRYRA9gJzadock4GPsdC3UXD_nA7MYTCrMJfRr08D-bVM3P82Ow4hyk-b2A-jUiMuWcH-lKrh9ZWwE2s7INwDewEiNuS7sWLnXyKxemXIYjNH3ouFMb4c2VOPk3IufpYpVq3RpB7sHMYO6bmuvTdepkEeYREPtMLtwF7awiIkwkziJu26UjRSNSnSBJajOoxW4ob757MOoGyzv1Kg_fbV-KfsOGZ62bm2j7TiFalz98ajPdMNAoT7l3e4Ku5nvOly75b7S6pJCpgxeE-aFD6odTYeSfnYAOk2XbJlNSBmmPsVQNYRqMAOOaZo5UQC-ox0epmZAX7dIJDUgNurLZmKQ"
-        }
-        await request.post('/home/create_goal/321').send(body).expect(200);
+        };
+        await request.post("/home/create_goal/321").send(body).expect(400);
     }); 
 }); 
 

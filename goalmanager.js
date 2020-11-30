@@ -1,6 +1,6 @@
 
 async function create(userid, title, author, content, milestones, schedule, tag) {
-    var MongoClient = require('mongodb').MongoClient;
+    var MongoClient = require("mongodb").MongoClient;
     var url = "mongodb://localhost:27017";
     
     const months = ["January", "February", "March", "April", "May", "June",
@@ -47,7 +47,7 @@ async function create(userid, title, author, content, milestones, schedule, tag)
 }
 
 async function viewAll(userid) {
-    var MongoClient = require('mongodb').MongoClient;
+    var MongoClient = require("mongodb").MongoClient;
     var url = "mongodb://localhost:27017";
     
     const client = await MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true});
@@ -58,7 +58,7 @@ async function viewAll(userid) {
     let user = await db.collection("users").findOne({"id" : userid});  
     let goalids = user.posts; 
     for(var i = 1; i < goalids.length; i++) {
-        let goal = await db.collection("goals").findOne({"id" : goalids[i]});
+        let goal = await db.collection("goals").findOne({"id" : `${goalids[i]}`});
         JSON.stringify(goal); 
         goals.push(goal); 
     }
@@ -68,56 +68,12 @@ async function viewAll(userid) {
     return goals; 
 }
 
-async function viewFeed(userid, limit) {
-    var MongoClient = require('mongodb').MongoClient;
-    var url = "mongodb://localhost:27017";
-    feed = []; 
- 
-    const client = await MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true});
-    const db = client.db("GoalStarter"); 
-
-    let user = await db.collection("users").findOne({"id" : userid}); 
-
-    //push friends' latest posts to the feed. 
-    let friends = user.friendslist; 
-    for(var i = 1; i < friends.length && feed.length < limit; i++) {
-        let friend = await db.collection("users").findOne({"id" : friends[i]});  
-        let postId = friend.posts[friend.posts.length - 1]; 
-        let post = await db.collection("goals").findOne({"id" : postId}); 
-        feed.push(post); 
-    }
-    
-    //analyze user preferences by tags. 
-    var preferences = []; 
+async function findMode(preferences) {
     var mode = {}; 
-
-    let posts = user.posts; 
-    for(var i = 1; i < posts.length; i++) {
-        let post = await db.collection("goals").findOne({"id" : posts[i]}); 
-        let tag = post.tag; 
-        preferences = preferences.concat(tag);
-    } 
-
-    let likes = user.likes; 
-    for(var i = 1; i < likes.length; i++) {
-        let post = await db.collection("goals").findOne({"id" : likes[i]}); 
-        let tag = post.tag; 
-        preferences = preferences.concat(tag);
-    }
-
-    let comments = user.comments; 
-    for(var i = 1; i < comments.length; i++) {
-        let post = await db.collection("goals").findOne({"id" : comments[i]}); 
-        let tag = post.tag; 
-        preferences = preferences.concat(tag);
-    }
-    
-    //compute the most common tag
-    if(preferences.length > 0) {
-        var maxTag = preferences[0], maxCount = 1;
-        for(var i = 0; i < preferences.length; i++)
+    var maxTag = preferences[0], maxCount = 1;
+        for(var m = 0; m < preferences.length; m++)
         {
-            var tag = preferences[i];
+            var tag = preferences[m];
             if(mode[tag] == null) {
                 mode[tag] = 1;
             }
@@ -130,16 +86,68 @@ async function viewFeed(userid, limit) {
                 maxCount = mode[tag];
             }
         }
-        
-        let recommended = await db.collection("goals").find({"tag" : maxTag}).limit(limit - feed.length).toArray(); 
-        feed = feed.concat(recommended); 
+    return maxTag;
+}
+    
+async function viewFeed(userid, limit) {
+    var MongoClient = require("mongodb").MongoClient;
+    var url = "mongodb://localhost:27017";
+    var feed = []; 
+ 
+    const client = await MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true});
+    const db = client.db("GoalStarter"); 
+
+    let user = await db.collection("users").findOne({"id" : userid}); 
+
+    //push friends' latest posts to the feed. 
+    let friends = user.friendslist; 
+    for(var i = 1; i < friends.length && feed.length < limit; i++) {
+        let friend = await db.collection("users").findOne({"id" : `${friends[i]}`});  
+        let postId = friend.posts[friend.posts.length - 1]; 
+        let post = await db.collection("goals").findOne({"id" : postId}); 
+        feed.push(post); 
+    }
+    
+    //analyze user preferences by tags. 
+    var preferences = []; 
+    let posts = user.posts; 
+    for(var j = 1; j < posts.length; j++) {
+        let post = await db.collection("goals").findOne({"id" : `${posts[j]}`}); 
+        let tag = post.tag; 
+   
+        preferences = preferences.concat(tag);
+    } 
+
+    let likes = user.likes; 
+    for(var k = 1; k < likes.length; k++) {
+        let post = await db.collection("goals").findOne({"id" : `${likes[k]}`}); 
+        let tag = post.tag; 
+     
+        preferences = preferences.concat(tag);
+    }
+
+    let comments = user.comments; 
+    for(var l = 1; l < comments.length; l++) {
+        let post = await db.collection("goals").findOne({"id" : `${comments[l]}`}); 
+        let tag = post.tag; 
+       
+        preferences = preferences.concat(tag);
+    }
+    
+    //compute the most common tag
+    if(preferences.length > 0) {
+        let maxTag = await findMode(preferences); 
+        let recommended = await db.collection("goals").find({"tag" : maxTag}).limit(limit-feed.length).toArray(); 
+       
+      Array.prototype.push.apply(feed,recommended);
+    
     }
     client.close(); 
     return feed; 
 }
 
 async function comment(userid, id, comment) {
-    var MongoClient = require('mongodb').MongoClient;
+    var MongoClient = require("mongodb").MongoClient;
     var url = "mongodb://localhost:27017";
     var now = new Date(Date.now()); 
     var date = `${now.getMonth()} ${now.getDay()}, ${now.getFullYear()}`;
@@ -171,7 +179,7 @@ async function comment(userid, id, comment) {
 }
 
 async function like(userid, id) {
-    var MongoClient = require('mongodb').MongoClient;
+    var MongoClient = require("mongodb").MongoClient;
     var url = "mongodb://localhost:27017";
 
     var now = new Date(Date.now()); 
@@ -204,17 +212,17 @@ async function like(userid, id) {
 }
 
 async function update(goalid, index) {
-    var MongoClient = require('mongodb').MongoClient;
+    var MongoClient = require("mongodb").MongoClient;
     var url = "mongodb://localhost:27017";
     const client = await MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true});
     const db = client.db("GoalStarter");
 
     if(index > 3 || index < 0) {
-        return 1
+        return 1;
     }
 
     await db.collection("goals").updateOne({"id" : goalid}, {$set: {
-        "index": index
+        index
     }});
 
 
@@ -223,10 +231,10 @@ async function update(goalid, index) {
 }
 
 module.exports = {
-    create : create,
-    like : like, 
-    comment : comment,
-    viewAll : viewAll, 
-    viewFeed : viewFeed, 
-    update : update 
-}
+    create,
+    like, 
+    comment,
+    viewAll, 
+    viewFeed, 
+    update 
+};

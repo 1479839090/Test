@@ -43,9 +43,7 @@ describe("view goals", () => {
         await db.createCollection("users", function(err, res) {
             if(err) {throw err;}  
         });
-        await db.createCollection("goals", function(err, res) {
-            if(err) {throw err;}  
-        });
+        
 
         await db.collection("users").insertOne(user); 
         await db.collection("users").insertOne(newUser);

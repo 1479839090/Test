@@ -19,44 +19,6 @@ app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
 var url = "mongodb://localhost:27017";
-const test = [
-    {id: "test1",
-    title: "I want to pass CPEN 331", 
-    author: "Eric", 
-    date: "October 22, 2020",
-    content: "The class is extremely difficult. I will try my best to pass the course and not fail or get depression", 
-    milestones: [],
-    schedule: [], 
-    tag: "undergraduate",
-    comments: ["Jason : Good Job", " Eric : I hope I pass too"], 
-    likes: 12,
-    index: 0 
-    }, 
-    {id: "test2", 
-    title: "I want to get Diamond in League", 
-    author: "Jason", 
-    date: "October 21, 2020",
-    content: "I am a hardstuck Wood V Jax main. I want to climb the ladder with Annie and Zed", 
-    milestones: [],
-    schedule: [], 
-    tag: "LoL",
-    comments: ["Steven : Good Luck", " Jason : You suck"], 
-    likes: 0,
-    index: 0
-    }, 
-    {id: "test3",
-    title: "I want to become the Prime Minister of Canada", 
-    author: "Steven", 
-    date: "July 1, 2019",
-    content: "I believe I should be the Prime Minister of Canada, Trudeau is a terrible and corrupt leader and I will do better", 
-    milestones: [],
-    schedule: [], 
-    tag: "employment",
-    comments: ["Steven : I voted for you", "Eric : What qualifies you for this position?"], 
-    likes: 100,
-    index: 0 
-    }
-];
 
 MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true}, async function(err, client) {
 
@@ -70,9 +32,7 @@ MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true}, asyn
         
     });
 
-    for(var i = 0; i < 3; i++) { 
-        await db.collection("goals").insertOne(test[i]); 
-    }
+    
     client.close(); 
 });
 

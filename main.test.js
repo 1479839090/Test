@@ -20,7 +20,7 @@ describe("view goals", () => {
             "pendingfriends" : ["NULL"], 
             "posts":["NULL", "test1"],
             "comments":["NULL", "test2"],
-            "likes":["NULL", "test3"]
+            "likes":["NULL", "test2"]
         };
 
         let newUser = {
@@ -114,19 +114,12 @@ describe("send friend request", () => {
     });     
 }); 
 
-describe("view and accept friend requests", () => {
+describe("view and accept friend requests with invalid email or userid", () => {
 
     it("newUser view friend request ", async() => {
         const response= await request.get("/home/pending/321");
         expect(response.status).toBe(200);  
-    });
-
-    it("newUser accepts friend request", async() => {
-        const body={ 
-            email : "cpen321@gmail.com"
-        }; 
-        await request.put("/home/confirm_requests/321").send(body).expect(200);
-    });     
+    });   
 
     it("invalid user accepts friend request", async() => {
         const body={ 
@@ -141,6 +134,15 @@ describe("view and accept friend requests", () => {
         };
         await request.put("/home/confirm_requests/321").send(body).expect(200);
     }); 
+});
+
+describe("accept friend request", () => {
+    it("newUser accepts friend request", async() => {
+        const body={ 
+            email : "cpen321@gmail.com"
+        }; 
+        await request.put("/home/confirm_requests/321").send(body).expect(200);
+    });  
 });
 
 describe("view friends list", () => {
@@ -213,9 +215,9 @@ describe("update goals tests", () => {
 
     it("like a goal as non-existant user", async() => {
         const like={ 
-            id : "test5",
+            id : "test1",
         };
-        await request.put("/home/like/123").send(like).expect(200);
+        await request.put("/home/like/456").send(like).expect(200);
     }); 
 
     it("comment on a goal", async() => {
@@ -229,11 +231,11 @@ describe("update goals tests", () => {
 
     it("comment on a goal as non-existent user", async() => {
         const like={ 
-            id : "test5",
+            id : "test1",
             comment : "test comment",
-            author : "123"
+            author : "Josh"
         };
-        await request.put("/home/comment/123").send(like).expect(200);
+        await request.put("/home/comment/456").send(like).expect(200);
     });
 }); 
 
@@ -247,7 +249,7 @@ describe("update user firebase token", () => {
     }); 
 }); 
 
-describe("deny friend request", () => {
+describe("deny friend request invalid email or userid", () => {
 
     beforeAll(async() => {
         var url = "mongodb://localhost:27017";
@@ -259,13 +261,6 @@ describe("deny friend request", () => {
             "pendingfriends": "cpen321@gmail.com"
         }});
         client.close();
-    }); 
-
-    it("newUser deny friend request from user", async() => {
-        const body={ 
-            email : "cpen321@gmail.com"
-        };
-        await request.put("/home/deny_requests/321").send(body).expect(200);
     }); 
 
     it("invalid deny friend request from user", async() => {
@@ -281,7 +276,18 @@ describe("deny friend request", () => {
         };
         await request.put("/home/deny_requests/321").send(body).expect(200);
     }); 
+
 }); 
+
+describe("deny friend request", () => {
+    
+    it("newUser deny friend request from user", async() => {
+        const body={ 
+            email : "cpen321@gmail.com"
+        };
+        await request.put("/home/deny_requests/321").send(body).expect(200);
+    }); 
+});
 
 describe("login test", () => {
     afterAll(async () => {
@@ -297,7 +303,7 @@ describe("login test", () => {
         const body={ 
             idToken : "eyJhbGciOiJSUzI1NiIsImtpZCI6ImRlZGMwMTJkMDdmNTJhZWRmZDVmOTc3ODRlMWJjYmUyM2MxOTcyNGQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI1MzQ4OTU1MzgxNTctc3UxMG80a2gyZ2N0OWVsZ2FhZmpnOW1uOTVmNWhsbW4uYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI1MzQ4OTU1MzgxNTctMTdvMjJyM3RxN2ZuNmc2cG5ob2UwcnBsNHFza3E1bmcuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTQ5NjI1NTQ3NDQ5MDcyNjk3MTEiLCJlbWFpbCI6ImFsYW4uc2h1eWFvd2VuQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJuYW1lIjoiU2h1eWFvIHdlbiIsInBpY3R1cmUiOiJodHRwczovL2xoNC5nb29nbGV1c2VyY29udGVudC5jb20vLW1IVHhRU0M3TkpzL0FBQUFBQUFBQUFJL0FBQUFBQUFBQUFBL0FNWnV1Y2xGQ0xLRDFTQXdwX25KTHM2MTBaY3BHemhGWWcvczk2LWMvcGhvdG8uanBnIiwiZ2l2ZW5fbmFtZSI6IlNodXlhbyIsImZhbWlseV9uYW1lIjoid2VuIiwibG9jYWxlIjoiZW4tR0IiLCJpYXQiOjE2MDYyNTk4NTMsImV4cCI6MTYwNjI2MzQ1M30.YRYRA9gJzadock4GPsdC3UXD_nA7MYTCrMJfRr08D-bVM3P82Ow4hyk-b2A-jUiMuWcH-lKrh9ZWwE2s7INwDewEiNuS7sWLnXyKxemXIYjNH3ouFMb4c2VOPk3IufpYpVq3RpB7sHMYO6bmuvTdepkEeYREPtMLtwF7awiIkwkziJu26UjRSNSnSBJajOoxW4ob757MOoGyzv1Kg_fbV-KfsOGZ62bm2j7TiFalz98ajPdMNAoT7l3e4Ku5nvOly75b7S6pJCpgxeE-aFD6odTYeSfnYAOk2XbJlNSBmmPsVQNYRqMAOOaZo5UQC-ox0epmZAX7dIJDUgNurLZmKQ"
         };
-        await request.post("/home/create_goal/321").send(body).expect(400);
+        await request.post("/login").send(body).expect(200);
     }); 
 }); 
 

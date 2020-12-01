@@ -19,7 +19,7 @@ async function create(userid, title, author, content, milestones, schedule, tag)
     var dateString = `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`; 
     //generate goal id
     var id = `${userid}${title}`;
-    var comments = ["Good"];
+    var comments = ["NULL"];
     var likes = 0;  
     var index = 0; 
 
@@ -104,6 +104,9 @@ async function viewFeed(userid, limit) {
     for(var i = 1; i < friends.length && feed.length < limit; i++) {
         let friend = await db.collection("users").findOne({"id" : `${friends[i]}`});  
         let postId = friend.posts[friend.posts.length - 1]; 
+        if(friend.posts.length <= 1) {
+            continue; 
+        }
         let post = await db.collection("goals").findOne({"id" : postId}); 
         feed.push(post); 
     }
@@ -217,7 +220,7 @@ async function update(goalid, index) {
     const client = await MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true});
     const db = client.db("GoalStarter");
 
-    if(index > 3 || index < 0) {
+    if(index > 4 || index < 0) {
         return 1;
     }
 

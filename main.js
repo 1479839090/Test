@@ -6,7 +6,6 @@ var express = require("express");
 
 //push notifications
 var bodyParser = require("body-parser");
-const { admin } =require( "./config");
 
 //app utilities 
 var goalmanager = require("./goalmanager");
@@ -20,22 +19,23 @@ app.use(bodyParser.json());
 
 var url = "mongodb://localhost:27017";
 
+//create database and collections for the app. 
+MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true}, async function(err, client) {
 
-const client = MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true}); 
-const db = client.db("GoalStarter"); 
+    var db = client.db("GoalStarter"); 
+    db.createCollection("users", function(err, res) {
+    });
+    db.createCollection("goals", function(err, res) {
+    });
 
-db.createCollection("users", function(err, res){});
-db.createCollection("goals", function(err, res) {});
-
-client.close(); 
+    client.close(); 
+});
 
 app.get("/home/:userid", async (req, res) => {
    var userid = req.params.userid; 
    var limit = 10; 
    var feed = await goalmanager.viewFeed(userid, limit);  
-   if(feed.length < limit) {
-       feed = feed.concat(test); 
-   }
+
    res.send(feed); 
 });
 
@@ -65,21 +65,7 @@ app.post("/home/send_requests", async (req, res ) => {
 
     let registrationToken = await usermanager.sendRequest(userEmail, recieverEmail); 
 
-    var payload = {
-        notifcation : {
-            title : "GoalStarter Friend Request",
-            body : `pending friend request from ${userEmail}`
-        }
-    };
-
-    admin.messaging().sendToDevice(registrationToken, payload)
-    .then( (response) => {
-
     res.status(200).send("Notification sent successfully"); 
-       
-    })
-    .catch((error) => {
-    });
 }); 
 
 

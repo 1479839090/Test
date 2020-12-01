@@ -1,4 +1,53 @@
 
+async function login(token) {
+    var MongoClient = require("mongodb").MongoClient;
+    var url = "mongodb://localhost:27017";
+    var {AudienceClientID,googleClient}=require("./app");
+    var err = 0; 
+
+    let newUser={
+        "id":"",
+        "username":"",
+        "email":"",
+        "firebase" : "", 
+        "friendslist":["NULL"],
+        "pendingfriends" : ["NULL"], 
+        "posts":["NULL"],
+        "comments":["NULL"],
+        "likes":["NULL"]
+    };
+
+    try {
+        const ticket = await googleClient.verifyIdToken({
+            idToken: token,
+            audience: AudienceClientID
+        }); 
+
+        const payload = ticket.getPayload();
+
+        newUser.id = ticket.getUserId();
+        newUser.email= payload["email"];    
+        newUser.username= payload["name"];
+    }
+    catch (error) {
+        
+       err = 1; 
+    }
+
+    const client = await MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true});
+    const db = client.db("GoalStarter"); 
+
+    let result= await db.collection("users").findOne({"id":newUser.id});
+    if(result==null){ 
+        await db.collection("users").insertOne(newUser);
+    } 
+    client.close();
+
+    if(err > 0) {
+        return err;} 
+    return newUser; 
+}
+
 async function getFriends(userid) { 
     var MongoClient = require("mongodb").MongoClient;
     var url = "mongodb://localhost:27017";
@@ -131,6 +180,7 @@ async function denyRequest(userid, senderEmail) {
 }
 
 module.exports = {
+    login, 
     getRequest,
     confirmRequest, 
     denyRequest, 
